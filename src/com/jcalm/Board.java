@@ -1,17 +1,19 @@
 package com.jcalm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Board {
     private int size;
-    private List<Animal> animals;
+    private ArrayList<Animal> animals;
     private int tickCounter;
     private byte initialZebraCount;
     private byte initialCheetahCount;
 
     public Board() {
         size = 20;
-        animals = new List<Animal>();
+        animals = new ArrayList<Animal>();
         tickCounter = 0;
         initialZebraCount = 0;
         initialCheetahCount = 0;
@@ -21,7 +23,7 @@ public class Board {
         this.size = size;
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
-        animals = new List<Animal>();
+        animals = new ArrayList<Animal>();
     }
 
     public byte getKillCount() {
@@ -47,6 +49,7 @@ public class Board {
             quit = getZebraCount() == 0;
         }
         printResult();
+        return 0;
     }
 
     private void printResult() {
