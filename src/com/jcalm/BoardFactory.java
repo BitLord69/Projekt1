@@ -1,9 +1,10 @@
 package com.jcalm;
 
 /*
-Programmerat av Jan-Erik "Janis" Karlsson 2019-09-27
-Programmering i Java EMMJUH19, EC-Utbildning
-CopyLeft 2019 - JanInc
+Grupparbete 1, Java19: Robotspel, 2019-09
+Gruppmedlemmar: Janis, Max, Lukas, Calle, Avid
+
+Denna klass är en Singleton, som returnerar ett bräde.
 */
 
 public class BoardFactory {
@@ -17,7 +18,7 @@ public class BoardFactory {
         board = new Board(size, initialZebraCount, initialCheetahCount);
     }
 
-    public Board getBoard() {
+    public static Board getBoard() {
         if (board == null)
             board = new Board();
 
