@@ -10,6 +10,8 @@ public abstract class Animal implements CollisionDetector {
     private byte direction;
     private boolean dead;
     private Coordinate coord; // skapar aggregat Coordinate till klassen Animal
+    protected static final int HIT_RATE = 30; // konstant för Cheetah
+
 
 
     //hello
@@ -31,6 +33,7 @@ public abstract class Animal implements CollisionDetector {
     public void move() { // metod för att röra på djuren
 
     }
+     // getRandomPercentage metod
 
     public Rectangle getBounds() { // metod för att få djurens "radie"
         Rectangle radar = new Rectangle();
