@@ -19,6 +19,7 @@ public abstract class Animal implements CollisionDetector {
 
         dead = false; // sätter dead till false så djuren man skapar inte är döda direkt
         full = 100;
+        predator = false;
     }
 
     public Animal(boolean predator, byte velocity) { // konstruktor med inparametrar
@@ -33,12 +34,27 @@ public abstract class Animal implements CollisionDetector {
     public void move() { // metod för att röra på djuren
 
     }
-     // getRandomPercentage metod
+
+
+     public double getRandom() { // metod för att slumpmässa ett tal från 0-100
+        int random;
+        random = (int)(Math.random() * 100) + 1; // random = ett tal mellan 0-100
+        return random;
+     }
 
     public Rectangle getBounds() { // metod för att få djurens "radie"
         Rectangle radar = new Rectangle();
         return radar;
     }
+    public boolean isPredator() {
+        return predator;
+    }
 }
+
+
+
+
+
+
 
 
