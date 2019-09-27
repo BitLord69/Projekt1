@@ -32,7 +32,7 @@ public abstract class Animal implements CollisionDetector {
 
     }
 
-    public Rectangle getBound() { // metod för att få djurens "radie"
+    public Rectangle getBounds() { // metod för att få djurens "radie"
         Rectangle radar = new Rectangle();
         return radar;
     }
