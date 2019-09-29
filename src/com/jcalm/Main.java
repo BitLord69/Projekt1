@@ -10,7 +10,7 @@ Huvudprogrammet för simuleringen
 public class Main {
 
     public static void main(String[] args) {
-        BoardFactory.createBoard(300, (byte)5, (byte)2);
+        BoardFactory.createBoard(100, (byte)2, (byte)1);
         BoardFactory.getBoard().createAnimals();
         BoardFactory.getBoard().runSimulation();
     }  // main

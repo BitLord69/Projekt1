@@ -35,11 +35,21 @@ public class Coordinate {
         return y;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     public void moveDelta(int deltaX, int deltaY) {
-        int newX = x - deltaX;
-        int newY = y - deltaY;
+        int newX = x + deltaX;
+        int newY = y + deltaY;
 
         // TODO: 2019-09-29 Lägg in kontroller om koodinaterna är under noll eller utanför brädets storlek
+        x = newX;
+        y = newY;
     } // moveDelta
 
     public String toString() {
