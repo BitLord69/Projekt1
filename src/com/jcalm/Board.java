@@ -1,7 +1,6 @@
 package com.jcalm;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Board {
@@ -23,16 +22,16 @@ public class Board {
     } // Board:Board
 
     public Board(int size, byte initialZebraCount, byte initialCheetahCount) {
+        tickCounter = 0;
         this.size = size;
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
         animals = new ArrayList<Animal>();
         
-        createAnimals();
+//        createAnimals();
     } // Board:Board
 
-    private void createAnimals() {
-        // TODO: 2019-09-29 Skriv kod för att skapa och lägga till djuren i listan
+    public void createAnimals() {
         for (int i = 0; i < initialZebraCount; i++){
             animals.add(new Zebra());
         } // for i...
@@ -65,17 +64,17 @@ public class Board {
                 a.move();
             } // for a...
 
-            tickCounter++;
             printBoard();
+            tickCounter++;
 
             // Fördröj spelet lite så att det går att läsa utskrifterna
             try {
-                TimeUnit.SECONDS.sleep(1);
+                TimeUnit.MILLISECONDS.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } // catch
 
-            quit = getZebraCount() == 0 || tickCounter > 10; // // TODO: 2019-09-29 Ta bort tickCounter-grenen när programmet är klart
+            quit = getZebraCount() == 0 || tickCounter >= 10; // // TODO: 2019-09-29 Ta bort tickCounter-grenen när programmet är klart
         } // while !quit...
         printResult();
 
@@ -84,10 +83,11 @@ public class Board {
 
     private void printResult() {
         System.out.println("Tack för att du spelade. Det tog " + tickCounter + " tics");
-    }
+        System.out.printf("%d zebror överlevde och %d geoparder är fortfarande med i spelet", getZebraCount(), getCheetahCount());
+    } // printResult
 
     private void printBoard() {
-        System.out.printf("Current tick count: %d%n", tickCounter);
+        System.out.printf("Current tick count: %d%n", (tickCounter + 1));
         for (Animal a: BoardFactory.getBoard().getAnimals())
             System.out.printf("%s%n", a);
     } // printBoard
@@ -101,5 +101,16 @@ public class Board {
         } // for a...
 
         return zebras;
+    } // getZebraCount
+
+    private byte getCheetahCount() {
+        byte cheetahs = 0;
+        for (Animal a : animals) {
+            if (a instanceof Cheetah) {
+                cheetahs++;
+            } // if a...
+        } // for a...
+
+        return cheetahs;
     } // getZebraCount
 } // class Board
