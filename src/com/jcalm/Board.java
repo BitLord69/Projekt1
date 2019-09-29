@@ -1,50 +1,65 @@
 package com.jcalm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 public class Board {
-    public final static byte MAX_ZEBRA_VELOCITY = 3;
-    public final static byte MAX_CHEETAH_VELOCITY = 6;
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
+    public static final byte MAX_ZEBRA_VELOCITY = 3;
+    public static final byte MAX_CHEETAH_VELOCITY = 6;
+    public static final byte MAX_COMA_COUNTER = 3;
+    public static final int CHEETAH_STARVATION_RATE = 2;
 
     private int size;
     private ArrayList<Animal> animals;
     private int tickCounter;
     private byte initialZebraCount;
     private byte initialCheetahCount;
+    private boolean scambleList;
 
     public Board() {
         size = 20;
-        animals = new ArrayList<Animal>();
         tickCounter = 0;
+        scambleList = false;
         initialZebraCount = 0;
         initialCheetahCount = 0;
+        animals = new ArrayList<Animal>();
     } // Board:Board
 
     public Board(int size, byte initialZebraCount, byte initialCheetahCount) {
         tickCounter = 0;
         this.size = size;
+        scambleList = false;
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
         animals = new ArrayList<Animal>();
-        
-//        createAnimals();
     } // Board:Board
 
     public void createAnimals() {
-        for (int i = 0; i < initialZebraCount; i++){
+        for (int i = 0; i < initialZebraCount; i++) {
             animals.add(new Zebra());
         } // for i...
 
-        for (int i = 0; i < initialCheetahCount; i++){
+        for (int i = 0; i < initialCheetahCount; i++) {
             animals.add(new Cheetah());
         } // for i...
     } // createAnimals
 
-    public void killAnimal(Animal a){
-        // TODO: 2019-09-29 Ta bort ett djur ur listan
+    public void killAnimal(Animal a) {
+        a.setDead(true);
+//        animals.remove(a);
     } // killAnimal
-    
+
     public int getSize() {
         return size;
     } // getSize
@@ -66,7 +81,14 @@ public class Board {
                 a.move();
             } // for a...
 
+            cleanupBoard();
             tickCounter++;
+
+            // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
+            // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland) 
+            if (scambleList) {
+                Collections.shuffle(animals);
+            } // if scrambleList...
 
             // Fördröj spelet lite så att det går att läsa utskrifterna
             try {
@@ -75,22 +97,37 @@ public class Board {
                 e.printStackTrace();
             } // catch
 
-            quit = getZebraCount() == 0 || tickCounter >= 10; // // TODO: 2019-09-29 Ta bort tickCounter-grenen när programmet är klart
+            quit = getZebraCount() == 0 || getCheetahCount() == 0; // || tickCounter >= 10;
         } // while !quit...
         printResult();
 
         return 0;
     } // runSimulation
 
+    // Ta bort de döda djuren från spelplanen
+    private void cleanupBoard() {
+        ArrayList<Animal> dead = new ArrayList<Animal>();
+        for (Animal a : animals)
+            if (a.isDead())
+                dead.add(a);
+
+        for (Animal a : dead)
+            animals.remove(a);
+    } // cleanupBoard
+
     private void printResult() {
-        System.out.println("Tack för att du spelade. Det tog " + tickCounter + " tics");
-        System.out.printf("%d zebror överlevde och %d geoparder är fortfarande med i spelet", getZebraCount(), getCheetahCount());
+        System.out.println("\nTack för att du spelade. Simuleringen tog " + ANSI_BLUE + tickCounter + ANSI_RESET + " ticks.");
+        System.out.printf("%d zebror och %d geopard(er) överlevde spelet", getZebraCount(), getCheetahCount());
     } // printResult
 
     private void printBoard() {
-        System.out.printf("---------------------------------------------%nCurrent tick count: %d%n", (tickCounter + 1));
-        for (Animal a: BoardFactory.getBoard().getAnimals())
-            System.out.printf("%s%n", a);
+        System.out.printf("%s%nCurrent tick count: %s%d%s, antalet zebror: %s%d%s, antal geparder: %s%d%s, kill count: %s%d%s%n",
+                "-".repeat(60), ANSI_BLUE, (tickCounter + 1), ANSI_RESET,
+                ANSI_BLUE, getZebraCount(), ANSI_RESET,
+                ANSI_BLUE, getCheetahCount(), ANSI_RESET,
+                ANSI_RED, getKillCount(), ANSI_RESET);
+//        for (Animal a : animals)
+//            System.out.printf("%s%n", a);
     } // printBoard
 
     private byte getZebraCount() {
@@ -114,4 +151,14 @@ public class Board {
 
         return cheetahs;
     } // getZebraCount
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(String.format("Board: size = %d, initialZebraCount = %d, initialCheetahCount = %d, scrambleList = %b, animals [%d] = %n", size, initialZebraCount, initialCheetahCount, scambleList, animals.size()));
+
+        for (Animal a : animals) {
+            sb.append(String.format("\t\t%s%n", a));
+        }
+        return sb.toString();
+    } // toString
 } // class Board

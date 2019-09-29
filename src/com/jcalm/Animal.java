@@ -1,20 +1,16 @@
 package com.jcalm;
 
 import java.awt.*;
-import java.util.*;
-
-import static java.util.Map.Entry.comparingByValue;
-import static java.util.stream.Collectors.toMap;
 
 public abstract class Animal implements CollisionDetector {
     protected static final int HIT_RATE = 30; // konstant för Cheetah
 
-    private boolean predator;
-    private byte full;
-    private byte direction;
-    private boolean dead;
+    protected byte full;
     protected byte velocity;
     protected Coordinate coord; // skapar aggregat Coordinate till klassen Animal
+    private boolean predator;
+    private byte direction;
+    private boolean dead;
 
     public Animal() { // def konstruktor
         int x = (int) (Math.random() * BoardFactory.getBoard().getSize());
@@ -26,25 +22,25 @@ public abstract class Animal implements CollisionDetector {
         coord = new Coordinate(x, y);
     } // Animal:Animal
 
-    public Animal(boolean predator, byte velocity) { // konstruktor med inparametrar
-        int size = BoardFactory.getBoard().getSize();
-        int x = (int) (Math.random() * size);
-        int y = (int) (Math.random() * size);
+    public Animal(boolean predator, byte velocity) { // konstruktor med inparametrar;
+        int x = (int) (Math.random() * BoardFactory.getBoard().getSize());
+        int y = (int) (Math.random() * BoardFactory.getBoard().getSize());
+        coord = new Coordinate(x, y);
 
         dead = false; // sätter dead till false så djuren man skapar inte är döda direkt
         full = 100;
-        coord = new Coordinate(x, y);
 
         this.velocity = velocity;
         this.predator = predator;
-    } // Anmimal:Animal
+    } // Animal:Animal
 
     public boolean eat(Animal dinner) { // metod för att äta
-        // TODO: 2019-09-29 Kontrollera mha procentkoll om bytet äts. Kontrollera även om geparden redan är mätt.
+        // TODO: 2019-09-29 Kontrollera mha procentkoll om bytet äts.
         return false;
     } // eat
 
     public void move() { // metod för att röra på djuren
+        // TODO: 2019-09-29 När Zerba.move är klar, se om man eventuellt kan flytta upp delar av metoderna hit, eller åtminstone lyfta upp delar i andra metoder
 /*
         ArrayList<Animal> animals = BoardFactory.getBoard().getAnimals();
         Map<Animal, Double> distances = new HashMap<>();
@@ -129,13 +125,21 @@ public abstract class Animal implements CollisionDetector {
         return predator;
     } // isPredator
 
+    public boolean isDead() {
+        return dead;
+    } // isDead
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    } // setDead
+
     public Coordinate getCoord() {
         return coord;
     } // getCoord
 
     // Implementering av interfacet CollisionDetercor
     public Rectangle getBounds() { // metod för att få djurens "radie"
-        // TODO: 2019-09-29 Lägg till så att rektangeln täcker in hur lågt djuret kan gå per runda (x och y hamnar då i mitten i normalfallet)
+        // TODO: 2019-09-29 Lägg till så att rektangeln täcker in hur långt djuret kan gå per runda (x och y hamnar då i mitten i normalfallet)
         Rectangle radar = new Rectangle(coord.getX(), coord.getY(), 1, 1);
         return radar;
     } // getBounds
@@ -147,6 +151,6 @@ public abstract class Animal implements CollisionDetector {
 
     @Override
     public String toString() {
-        return String.format("Animal{predator: %b, full: %d, velocity: %d, koordinater: %s}", predator, full, velocity, coord);
+        return String.format("Animal{predator: %b, dead: %b, full: %d, velocity: %d, koordinater: %s}", predator, dead, full, velocity, coord);
     } // toString
 } // class Animal

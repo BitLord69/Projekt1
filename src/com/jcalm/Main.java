@@ -10,8 +10,10 @@ Huvudprogrammet för simuleringen
 public class Main {
 
     public static void main(String[] args) {
-        BoardFactory.createBoard(100, (byte)2, (byte)1);
+        // TODO: 2019-09-29 Fråga användaren om de tre parametrarna till createBoard
+        BoardFactory.createBoard(500, (byte) 5, (byte) 2);
         BoardFactory.getBoard().createAnimals();
+        System.out.printf("I main, innan start: %n%s", BoardFactory.getBoard());
         BoardFactory.getBoard().runSimulation();
     }  // main
 } // class Main

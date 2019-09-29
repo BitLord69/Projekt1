@@ -47,7 +47,7 @@ public class Coordinate {
         int newX = x + deltaX;
         int newY = y + deltaY;
 
-        // TODO: 2019-09-29 Lägg in kontroller om koodinaterna är under noll eller utanför brädets storlek
+        // TODO: 2019-09-29 Lägg in kontroller om koordinaterna är under noll eller utanför brädets storlek
         x = newX;
         y = newY;
     } // moveDelta
