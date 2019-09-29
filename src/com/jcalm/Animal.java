@@ -18,7 +18,7 @@ public abstract class Animal implements CollisionDetector {
 
         dead = false; // sätter dead till false så djuren man skapar inte är döda direkt
         full = 100;
-
+        predator = false;
         coord = new Coordinate(x, y);
     } // Anmimal:Animal
 
@@ -36,15 +36,32 @@ public abstract class Animal implements CollisionDetector {
     } // move
 
     public int getRandomPercentage(){
-        // TODO: 2019-09-29 Skriv kod för att generera ett slumptal mellan 1 och 100 
+        // TODO: 2019-09-29 Skriv kod för att generera ett slumptal mellan 1 och 100
         return 10;
     } // getRandomPercentage
 
+     public double getRandom() { // metod för att slumpmässa ett tal från 0-100
+        int random;
+        random = (int)(Math.random() * 100) + 1; // random = ett tal mellan 0-100
+        return random;
+     }
+
     public Rectangle getBounds() { // metod för att få djurens "radie"
-        // TODO: 2019-09-29 Skriv kod för att generera ett djurs omgivande rektangel; beror på velocity, dvs hur långt ett djur max kan gå per varv
         Rectangle radar = new Rectangle();
         return radar;
     } // getBounds
+
+    public boolean isPredator() {
+        return predator;
+    }
+}
+
+
+
+
+
+
+
 
     @Override
     public String toString() {
