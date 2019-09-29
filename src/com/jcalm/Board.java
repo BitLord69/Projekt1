@@ -20,6 +20,8 @@ public class Board {
     public static final byte MAX_COMA_COUNTER = 3;
     public static final int CHEETAH_STARVATION_RATE = 2;
 
+    public static final int DELAY_IN_MILLIS = 250;
+
     private int size;
     private ArrayList<Animal> animals;
     private int tickCounter;
@@ -92,7 +94,7 @@ public class Board {
 
             // Fördröj spelet lite så att det går att läsa utskrifterna
             try {
-                TimeUnit.MILLISECONDS.sleep(500);
+                TimeUnit.MILLISECONDS.sleep(DELAY_IN_MILLIS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } // catch
@@ -117,14 +119,16 @@ public class Board {
 
     private void printResult() {
         System.out.println("\nTack för att du spelade. Simuleringen tog " + ANSI_BLUE + tickCounter + ANSI_RESET + " ticks.");
-        System.out.printf("%d zebror och %d geopard(er) överlevde spelet", getZebraCount(), getCheetahCount());
+        System.out.printf("%s%d/%d%s zebror och %s%d/%d%s geopard(er) överlevde spelet",
+                ANSI_BLUE, getZebraCount(), initialZebraCount, ANSI_RESET,
+                ANSI_BLUE, getCheetahCount(), initialCheetahCount, ANSI_RESET);
     } // printResult
 
     private void printBoard() {
-        System.out.printf("%s%nCurrent tick count: %s%d%s, antalet zebror: %s%d%s, antal geparder: %s%d%s, kill count: %s%d%s%n",
+        System.out.printf("%s%nCurrent tick count: %s%d%s, antalet zebror: %s%d/%d%s, antal geparder: %s%d/%d%s, kill count: %s%d%s%n",
                 "-".repeat(60), ANSI_BLUE, (tickCounter + 1), ANSI_RESET,
-                ANSI_BLUE, getZebraCount(), ANSI_RESET,
-                ANSI_BLUE, getCheetahCount(), ANSI_RESET,
+                ANSI_BLUE, getZebraCount(), initialZebraCount, ANSI_RESET,
+                ANSI_BLUE, getCheetahCount(), initialCheetahCount, ANSI_RESET,
                 ANSI_RED, getKillCount(), ANSI_RESET);
 //        for (Animal a : animals)
 //            System.out.printf("%s%n", a);
