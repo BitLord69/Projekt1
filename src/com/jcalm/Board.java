@@ -60,11 +60,12 @@ public class Board {
     public byte runSimulation() {
         boolean quit = false;
         while (!quit) {
+            printBoard();
+
             for (Animal a : animals) {
                 a.move();
             } // for a...
 
-            printBoard();
             tickCounter++;
 
             // Fördröj spelet lite så att det går att läsa utskrifterna
@@ -87,7 +88,7 @@ public class Board {
     } // printResult
 
     private void printBoard() {
-        System.out.printf("Current tick count: %d%n", (tickCounter + 1));
+        System.out.printf("---------------------------------------------%nCurrent tick count: %d%n", (tickCounter + 1));
         for (Animal a: BoardFactory.getBoard().getAnimals())
             System.out.printf("%s%n", a);
     } // printBoard

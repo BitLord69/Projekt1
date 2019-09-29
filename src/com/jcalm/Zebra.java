@@ -10,11 +10,7 @@ public class Zebra extends Animal {
         super(false, velocity);
     } // Zebra:Zebra
 
-    public void move(CollisionDetector cd) {
-
-    }
-
-    public boolean collide(CollisionDetector cd) {
-    return true;
+    public void move() {
+        super.move();
     }
 }
