@@ -1,6 +1,8 @@
 package com.jcalm;
 
-public interface CollisionDetector {
-    boolean collide (CollisionDetector[] cd);
-}
+import java.awt.*;
 
+public interface CollisionDetector {
+    Rectangle getBounds();
+    boolean collide (CollisionDetector cd);
+}

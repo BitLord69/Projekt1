@@ -2,14 +2,15 @@ package com.jcalm;
 
 public class Coordinate {
 
-    private byte x;
-    private byte y;
+    private int x;
+    private int y;
 
+    public Coordinate() {
+        x = 0;
+        y = 0;
+    } // Coordinate:Coordinate
 
-
-    public Coordinate() {}
-
-    public Coordinate(byte x, byte y) {
+    public Coordinate(int x, int y) {
         if (x > 0) {
             this.x = x;
         }
@@ -22,16 +23,29 @@ public class Coordinate {
         else {
             this.y = 0;
         }
-    }
 
-    public byte getX() {
+        // TODO: 2019-09-29 Lägg in en kontroll så att värdena inte är större än brädets storlek
+    } // Coordinate:Coordinate
+
+    public int getX() {
         return x;
     }
 
-    public byte getY() {
+    public int getY() {
         return y;
     }
-}
+
+    public void moveDelta(int deltaX, int deltaY) {
+        int newX = x - deltaX;
+        int newY = y - deltaY;
+
+        // TODO: 2019-09-29 Lägg in kontroller om koodinaterna är under noll eller utanför brädets storlek
+    } // moveDelta
+
+    public String toString() {
+        return String.format("Coordinate{x: %d, y: %d}", x, y);
+    } // toString
+} // Coordinate
 
 
 
