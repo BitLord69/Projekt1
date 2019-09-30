@@ -100,7 +100,7 @@ public class Board {
             } // catch
 
             quit = getZebraCount() == 0 || getCheetahCount() == 0; // || tickCounter >= 10;
-        } // while !quit...
+        }  //while (!quit)
         printResult();
 
         return 0;

@@ -13,7 +13,7 @@ public class Cheetah extends Animal {
 
     public Cheetah() { // default konstruktor
         super(true, Board.MAX_CHEETAH_VELOCITY);
-    } // Cheetah:Cheetah
+    } // Cheetah:Cheetah*
 
     public Cheetah(byte velocity) { // skapar en konstruktor med en byte som inparameter, sätter boolean predator till true och skickar dem till Animal
         super(true, velocity);
@@ -49,7 +49,7 @@ public class Cheetah extends Animal {
                         bHasEaten = true;
                         break;
                     } // if eat...
-                } // if isPredator...
+                } // if collide...
                 else {
                     int deltaX = a.coord.getX() - coord.getX();
                     int deltaY = a.coord.getY() - coord.getY();
@@ -71,14 +71,14 @@ public class Cheetah extends Animal {
                     .collect(
                             toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                     LinkedHashMap::new));
-            Animal firstKey = sorted.keySet().iterator().next();
+            Animal closestZebra = sorted.keySet().iterator().next();
 
             // Hamnar geparden utanför strike zone? I så fall gå så långt som möjligt mot zebran
-            if (sorted.get(firstKey) >= velocity) {
+            if (sorted.get(closestZebra) >= velocity) {
                 // Använd cosinus-satsen för att beräkna nya x och y
-                int deltaX = firstKey.coord.getX() - coord.getX();
-                int deltaY = firstKey.coord.getY() - coord.getY();
-                double cosV = deltaX / sorted.get(firstKey);
+                int deltaX = closestZebra.coord.getX() - coord.getX();
+                int deltaY = closestZebra.coord.getY() - coord.getY();
+                double cosV = deltaX / sorted.get(closestZebra);
 
                 // TODO: 2019-09-29 Om man vill att geparder ska gå slumpartad längd, ändra i formeln nedan
                 moveX = (int) Math.round((velocity * cosV));
@@ -87,10 +87,10 @@ public class Cheetah extends Animal {
                 starve();
             } // if sorted...
             else {
-                moveX = firstKey.coord.getX();
-                moveY = firstKey.coord.getY();
+                moveX = closestZebra.coord.getX();
+                moveY = closestZebra.coord.getY();
 
-                if (eat(firstKey)) {
+                if (eat(closestZebra)) {
                     coord.setX(moveX);
                     coord.setY(moveY);
                 } // if eat...
@@ -98,7 +98,7 @@ public class Cheetah extends Animal {
                     starve();
             } // else
 
-            System.out.printf("\tAvstånd till närmaste zebra: %s: %f, move(X): %d, move(Y): %d%n", firstKey, sorted.get(firstKey), moveX, moveY);
+            System.out.printf("\tAvstånd till närmaste zebra: %s: %f, move(X): %d, move(Y): %d%n", closestZebra, sorted.get(closestZebra), moveX, moveY);
         } // if bHasEaten...
     } // move
 
