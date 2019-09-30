@@ -115,10 +115,8 @@ public abstract class Animal implements CollisionDetector {
         } */
     } // move
 
-    public double getRandomPercentage() { // metod för att slumpa ett tal från 1-100
-        int random;
-        random = (int) (Math.random() * 100) + 1; // random = ett tal mellan 0-100
-        return random;
+    public int getRandomPercentage() { // metod för att slumpa ett tal från 1-100
+        return (int) (Math.random() * 100) + 1; // random = ett tal mellan 0-100
     } // getRandomPercentage
 
     public boolean isPredator() {

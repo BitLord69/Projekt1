@@ -111,9 +111,9 @@ public class Cheetah extends Animal {
     @Override
     public boolean eat(Animal dinner) {
         // TODO: 2019-09-29 Kolla om geoparden lyckas döda bytet - just nu lyckas de alltid.
-        boolean killed = true; // formel för lyckad jakt istället för true
+        boolean killed = getRandomPercentage() < HIT_RATE; // formel för lyckad jakt istället för true
 
-        System.out.printf("\t\tI %sCheetah.eat!%s %s vill äta %s%n", Board.ANSI_RED, Board.ANSI_RESET, this, dinner);
+        System.out.printf("\t\tI %sCheetah.eat!%s %s vill äta %s, lyckades döda: %b%n", Board.ANSI_RED, Board.ANSI_RESET, this, dinner, killed);
         if (killed) {
             full = 100;
             foodComaCounter = Board.MAX_COMA_COUNTER;

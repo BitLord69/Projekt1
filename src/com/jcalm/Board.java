@@ -27,12 +27,12 @@ public class Board {
     private int tickCounter;
     private byte initialZebraCount;
     private byte initialCheetahCount;
-    private boolean scambleList;
+    private boolean scrambleList;
 
     public Board() {
         size = 20;
         tickCounter = 0;
-        scambleList = false;
+        scrambleList = false;
         initialZebraCount = 0;
         initialCheetahCount = 0;
         animals = new ArrayList<Animal>();
@@ -41,7 +41,7 @@ public class Board {
     public Board(int size, byte initialZebraCount, byte initialCheetahCount) {
         tickCounter = 0;
         this.size = size;
-        scambleList = false;
+        scrambleList = false;
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
         animals = new ArrayList<Animal>();
@@ -88,7 +88,7 @@ public class Board {
 
             // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
             // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland) 
-            if (scambleList) {
+            if (scrambleList) {
                 Collections.shuffle(animals);
             } // if scrambleList...
 
@@ -158,7 +158,7 @@ public class Board {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(String.format("Board: size = %d, initialZebraCount = %d, initialCheetahCount = %d, scrambleList = %b, animals [%d] = %n", size, initialZebraCount, initialCheetahCount, scambleList, animals.size()));
+        StringBuilder sb = new StringBuilder(String.format("Board: size = %d, initialZebraCount = %d, initialCheetahCount = %d, scrambleList = %b, animals [%d] = %n", size, initialZebraCount, initialCheetahCount, scrambleList, animals.size()));
 
         for (Animal a : animals) {
             sb.append(String.format("\t\t%s%n", a));
