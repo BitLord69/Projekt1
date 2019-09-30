@@ -1,6 +1,7 @@
 package com.jcalm;
 
 import java.awt.*;
+import java.util.Random;
 
 public abstract class Animal implements CollisionDetector {
     protected static final int HIT_RATE = 30; // konstant för Cheetah
@@ -34,10 +35,29 @@ public abstract class Animal implements CollisionDetector {
         this.predator = predator;
     } // Animal:Animal
 
-    public boolean eat(Animal dinner) { // metod för att äta
+    public boolean eat(Animal dinner) { // metod för att äta *
         // TODO: 2019-09-29 Kontrollera mha procentkoll om bytet äts.
         return false;
     } // eat
+    public void moveRandom() {
+        // TODO: 2019-09-29 Lägg in zebrans flytt. Börja med eventuell slumpvis flytt och om inte detta, unvdik geparder
+        int x = coord.getX();
+        int y = coord.getY();
+
+        int xMin = x - velocity;
+        int xMax = x + velocity;
+        int yMin = y - velocity;
+        int yMax = y + velocity;
+        Random r = new Random();
+
+        int newCoordinateX = r.nextInt(xMax - xMin) + xMin;
+        int newCoordinateY = r.nextInt(yMax - yMin) + yMin;
+
+        coord.setX(newCoordinateX);
+        coord.setY(newCoordinateY);
+        System.out.printf("newX = %d, newY = %d", newCoordinateX, newCoordinateY);
+        System.out.printf("\t%s%n\tI %sCheetah.move%s - detta djur: %s%n", "-".repeat(30), Board.ANSI_GREEN, Board.ANSI_RESET, this);
+    }
 
     public void move() { // metod för att röra på djuren
         // TODO: 2019-09-29 När Zerba.move är klar, se om man eventuellt kan flytta upp delar av metoderna hit, eller åtminstone lyfta upp delar i andra metoder
