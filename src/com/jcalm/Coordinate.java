@@ -10,21 +10,29 @@ public class Coordinate {
         y = 0;
     } // Coordinate:Coordinate
 
+
     public Coordinate(int x, int y) {
+        int size = BoardFactory.getBoard().getSize();
+
         if (x > 0) {
-            this.x = x;
-        }
-        else {
+            if (x > size)
+                this.x = size - 1;
+            else {
+                this.x = x;
+            }
+        } else {
             this.x = 0;
         }
+
         if (y > 0) {
-            this.y = y;
-        }
-        else {
+            if (y > size)
+                this.y = size - 1;
+            else {
+                this.y = y;
+            }
+        } else {
             this.y = 0;
         }
-
-        // TODO: 2019-09-29 Lägg in en kontroll så att värdena inte är större än brädets storlek
     } // Coordinate:Coordinate
 
     public int getX() {
@@ -44,10 +52,21 @@ public class Coordinate {
     }
 
     public void moveDelta(int deltaX, int deltaY) {
+        int size = BoardFactory.getBoard().getSize();
+
         int newX = x + deltaX;
         int newY = y + deltaY;
 
-        // TODO: 2019-09-29 Lägg in kontroller om koordinaterna är under noll eller utanför brädets storlek
+        if (newX < 0) {
+            newX = Math.abs(newX);
+        } else if (newX > size - 1)
+            newX = size - newX % size;
+
+        if (newY < 0) {
+            newY = Math.abs(newY);
+        } else if (newY > size - 1)
+            newY = size - newY % size;
+
         x = newX;
         y = newY;
     } // moveDelta
