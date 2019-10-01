@@ -20,9 +20,9 @@ public class Zebra extends Animal {
 
     public void move() {
 
-        if (getRandomPercentage() < Board.ZEBRA_RANDOM_MOVE_RATIO) { // om det slumpade talet är större än konstanten 30
+        if (getRandomPercentage() < Board.ZEBRA_RANDOM_MOVE_RATIO) { // om det slumpade talet är mindre än konstanten 30
             moveRandomly(); // gå åt ett slumpartat håll
-            return;
+            return; // går ur move-metoden
         }
 
         ArrayList<Animal> animals = BoardFactory.getBoard().getAnimals(); // hämtar alla djur från spelbrädet
@@ -30,22 +30,21 @@ public class Zebra extends Animal {
 
         // System.out.printf("\t%s%n\tI %sCheetah.move%s - detta djur: %s%n", "-".repeat(30), Board.ANSI_GREEN, Board.ANSI_RESET, this);
 
-        for (Animal a : animals) {
+        for (Animal a : animals) { // går igenom djurlistan
 
             if (a != this && a.isPredator() && !a.isDead()) { // om inte detta djuret, och om detta djuret är en predator, och om detta djuret inte är dött så...
-                int deltaX = a.coord.getX() - coord.getX();
-                int deltaY = a.coord.getY() - coord.getY();
-                double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);  // räknar ut avståndet till det aktuella objektet
-                distances.put(a, dist); // lägger in avståndet i hashmapen
+                int deltaX = a.coord.getX() - coord.getX(); // hämtar x-koordinaten till den aktuella cheetahn
+                int deltaY = a.coord.getY() - coord.getY(); // hämtar y-koordinaten till den aktuella cheetahn
+                double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);  // räknar ut avståndet till cheetahn
+                distances.put(a, dist); // lägger in avståndet till cheetahn i hashmapen
             }
         }
         int moveX, moveY;
 
-
         Map<Animal, Double> sorted = distances // ber hashmapen att sortera alla avstånd
                 .entrySet()
                 .stream()
-                .sorted(comparingByValue()) //
+                .sorted(comparingByValue()) // sorterar hashmapen
                 .collect(
                         toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                 LinkedHashMap::new));
@@ -53,7 +52,7 @@ public class Zebra extends Animal {
 
         int deltaX = closestCheetah.coord.getX() - coord.getX();
         int deltaY = closestCheetah.coord.getY() - coord.getY();
-        double cosV = deltaX / sorted.get(closestCheetah); // hämtar koordinaterna för den närmsta geparden
+        double cosV = deltaX / sorted.get(closestCheetah); // hämtar positionen för den närmsta geparden
 
 
         moveX = (int) Math.round((velocity * cosV));
@@ -65,3 +64,4 @@ public class Zebra extends Animal {
 
 
 }
+

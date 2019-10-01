@@ -41,21 +41,21 @@ public abstract class Animal implements CollisionDetector {
     } // eat
 
     public void moveRandomly() {
-        // TODO: 2019-10-01 Calle, Lukas - Kommentera vad som händer i koden
+
         int x = coord.getX();
         int y = coord.getY();
 
         int xMin = x - velocity;
-        int xMax = x + velocity;
+        int xMax = x + velocity; // skapar två x-koordinatsvariabler
         int yMin = y - velocity;
-        int yMax = y + velocity;
-        Random r = new Random();
+        int yMax = y + velocity; // skapar två y-koordinatsvariabler
+        Random r = new Random(); // skapar ett objekt av klassen Random
 
-        int newCoordinateX = r.nextInt(xMax - xMin) + xMin;
-        int newCoordinateY = r.nextInt(yMax - yMin) + yMin;
+        int newCoordinateX = r.nextInt(xMax - xMin) + xMin; // initierar en ny x-koordinat och ger den värdet av det slumpade talet
+        int newCoordinateY = r.nextInt(yMax - yMin) + yMin; // initierar en ny y-koordinat och ger den värdet av det slumpade talet
 
-        coord.setX(newCoordinateX);
-        coord.setY(newCoordinateY);
+        coord.setX(newCoordinateX); // sätter det nuvarande objektets x-värde till det av den slumpade x-koordinaten
+        coord.setY(newCoordinateY); // sätter det nuvarande objektets y-värde till det av den slumpade y-koordinaten
         System.out.printf("\t\t%s - %s, %s: newX = %d, newY = %d%n", Board.pimpString("Animal.moveRandomly,", Board.LEVEL_NORMAL), Board.pimpString(getClass().getSimpleName(), Board.LEVEL_STRESSED ),this, newCoordinateX, newCoordinateY);
     } // moveRandomly
 
