@@ -14,8 +14,8 @@ public abstract class Animal implements CollisionDetector {
     private boolean dead;
 
     public Animal() { // def konstruktor
-        int x = (int) (Math.random() * BoardFactory.getBoard().getSize());
-        int y = (int) (Math.random() * BoardFactory.getBoard().getSize());
+        int x = (int) (Math.random() * BoardFactory.getBoard().getBoardSize());
+        int y = (int) (Math.random() * BoardFactory.getBoard().getBoardSize());
 
         dead = false; // sätter dead till false så djuren man skapar inte är döda direkt
         full = 100;
@@ -24,8 +24,8 @@ public abstract class Animal implements CollisionDetector {
     } // Animal:Animal
 
     public Animal(boolean predator, byte velocity) { // konstruktor med inparametrar;
-        int x = (int) (Math.random() * BoardFactory.getBoard().getSize());
-        int y = (int) (Math.random() * BoardFactory.getBoard().getSize());
+        int x = (int) (Math.random() * BoardFactory.getBoard().getBoardSize());
+        int y = (int) (Math.random() * BoardFactory.getBoard().getBoardSize());
         coord = new Coordinate(x, y);
 
         dead = false; // sätter dead till false så djuren man skapar inte är döda direkt
@@ -34,6 +34,8 @@ public abstract class Animal implements CollisionDetector {
         this.velocity = velocity;
         this.predator = predator;
     } // Animal:Animal
+
+    public abstract void render(Graphics g);
 
     public boolean eat(Animal dinner) { // metod för att äta *
         // TODO: 2019-09-29 Kontrollera mha procentkoll om bytet äts.

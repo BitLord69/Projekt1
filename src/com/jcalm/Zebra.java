@@ -1,5 +1,10 @@
 package com.jcalm;
 
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,8 +23,30 @@ public class Zebra extends Animal {
         super(false, velocity);
     } // Zebra:Zebra
 
-    public void move() {
+    @Override
+    public void render(Graphics g) {
+        int squareWidth = BoardFactory.getBoard().getMapSquareWidth();
+        int squareHeight = BoardFactory.getBoard().getMapSquareHeight();
 
+        int x = coord.getX() * squareWidth;
+        int y = coord.getY() * squareHeight;
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        BufferedImage bufferedImage = new BufferedImage(squareWidth, squareHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gImg = bufferedImage.createGraphics();
+
+        gImg.fillRect(0, 0, squareWidth, squareHeight);
+        gImg.setColor(Color.BLACK);
+        gImg.drawLine(0, squareHeight, squareWidth, 0); // /
+        Rectangle2D rect = new Rectangle2D.Double(0, 0, squareWidth, squareHeight);
+
+        g2d.setPaint(new TexturePaint(bufferedImage, rect));
+        g2d.fill(new RoundRectangle2D.Double(x, y, squareWidth, squareHeight, 2, 2));
+    } // render
+
+    public void move() {
         if (getRandomPercentage() < Board.ZEBRA_RANDOM_MOVE_RATIO) { // om det slumpade talet är större än konstanten 30
             moveRandomly(); // gå åt ett slumpartat håll
             return;
@@ -48,6 +75,11 @@ public class Zebra extends Animal {
                 .collect(
                         toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                 LinkedHashMap::new));
+
+        // Slut på geparder? Hoppa ut i så fall. Eftersom vi säter en flagga att ett djur dött, kan de ta slut under pågående körning
+        if (distances.isEmpty())
+            return;
+
         Animal closestCheetah = sorted.keySet().iterator().next(); // letar upp den närmsta geparden
 
         int deltaX = closestCheetah.coord.getX() - coord.getX();
