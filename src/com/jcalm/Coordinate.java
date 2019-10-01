@@ -72,7 +72,7 @@ public class Coordinate {
     } // moveDelta
 
     public String toString() {
-        return String.format("Coordinate{x: %d, y: %d}", x, y);
+        return String.format("Coordinate{x: %s, y: %s}", Board.pimpString(x, Board.LEVEL_INFO), Board.pimpString(y, Board.LEVEL_INFO));
     } // toString
 } // Coordinate
 

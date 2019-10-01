@@ -31,6 +31,11 @@ public class Cheetah extends Animal {
                 .collect(
                         toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                 LinkedHashMap::new));
+
+        // Slut på bytesdjur? Hoppa ut i så fall. Eftersom vi säter en flagga att ett djur dött, kan de ta slut under pågående körning
+        if (distances.isEmpty())
+            return;
+
         Animal closestZebra = sorted.keySet().iterator().next();
 
         // Hamnar geparden utanför strike zone? I så fall gå så långt som möjligt mot zebran
