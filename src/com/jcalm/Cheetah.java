@@ -45,8 +45,10 @@ public class Cheetah extends Animal {
             moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1));
             coord.moveDelta(moveX, moveY);
 
-            System.out.printf("\tI %s, %s: Avstånd till närmaste zebra: %s: %f, move(X): %d, move(Y): %d%n",
-                    Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), this.getCoord(), closestZebra, sorted.get(closestZebra), moveX, moveY);
+            System.out.printf("\tI %s, %s : Avstånd till närmaste zebra: %s: %s -> ΔX: %s, ΔY: %s%n",
+                    Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), this.getCoord(), closestZebra,
+                    Board.pimpString(sorted.get(closestZebra), Board.LEVEL_INFO),
+                    Board.pimpString(moveX, Board.LEVEL_INFO), Board.pimpString(moveY, Board.LEVEL_INFO));
 
             starve();
         } // if sorted...
@@ -61,9 +63,7 @@ public class Cheetah extends Animal {
     @Override
     public Rectangle getBounds() {
         Coordinate coNy = new Coordinate(coord.getX() - velocity / 2, coord.getY() - velocity / 2);
-
-        Rectangle radar = new Rectangle(coNy.getX(), coNy.getY(), velocity, velocity);
-        return radar;
+        return new Rectangle(coNy.getX(), coNy.getY(), velocity, velocity);
     } // getBounds
 
     private boolean hadSnack(Animal a) {
@@ -83,7 +83,7 @@ public class Cheetah extends Animal {
                 System.out.printf("\t\tI %s - åt %s%n", Board.pimpString("Cheetah.hadSnack", Board.LEVEL_BOLD), a);
             } // if eat...
             else
-            // Djuren står nära varandra ruta, men geparden slog inte bytet -> bytet panikhoppar iväg
+            // Djuren står nära varandra, men geparden slog inte bytet -> bytet panikhoppar iväg
             {
                 System.out.printf("\t\tI %s - lyckades %s äta %s%n", Board.pimpString("Cheetah.hadSnack", Board.LEVEL_BOLD), Board.pimpString("inte", Board.LEVEL_STRESSED), a);
                 a.moveRandomly();
@@ -102,11 +102,13 @@ public class Cheetah extends Animal {
         // Om geparden redan är mätt, minska mättnaden och hoppa ut direkt
         if (foodComaCounter > 0) {
             foodComaCounter--;
-            System.out.printf("\t%s%n\tI %s - detta djurs foodComaCounter = %d%n", "-".repeat(30), Board.pimpString("Cheetah.move", Board.LEVEL_NORMAL), foodComaCounter);
+            System.out.printf("\t%s%n\tI %s - denna predators foodComaCounter: %s%n", "-".repeat(40),
+                    Board.pimpString("Cheetah.move", Board.LEVEL_NORMAL),
+                    Board.pimpString(foodComaCounter, Board.LEVEL_INFO));
             return;
         } // if full...
 
-        System.out.printf("\t%s%n\tI %s - detta djur: %s%n", "-".repeat(30), Board.pimpString("Cheetah.move", Board.LEVEL_NORMAL), this);
+        System.out.printf("\t%s%n\tI %s - detta djur: %s%n", "-".repeat(40), Board.pimpString("Cheetah.move", Board.LEVEL_NORMAL), this);
 
         // Kolla om geparden ska flytta sig slumpartat
         if (getRandomPercentage() < Board.CHEETAH_RANDOM_MOVE_RATIO) {
@@ -146,7 +148,8 @@ public class Cheetah extends Animal {
 
     @Override
     public boolean eat(Animal dinner) {
-        boolean killed = getRandomPercentage() < HIT_RATE; // formel för lyckad jakt istället för true
+        // Lyckas geparden slå bytet?
+        boolean killed = getRandomPercentage() < HIT_RATE;
 
         System.out.printf("\t\tI %s - %s vill äta %s, lyckades döda: %b%n", Board.pimpString("Cheetah.eat", Board.LEVEL_BOLD), this, dinner, killed);
         if (killed) {

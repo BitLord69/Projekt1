@@ -32,8 +32,8 @@ public class Board {
     private int size;
     private ArrayList<Animal> animals;
     private int tickCounter;
-    private byte initialZebraCount;
-    private byte initialCheetahCount;
+    private int initialZebraCount;
+    private int initialCheetahCount;
     private boolean scrambleList;
 
     public Board() {
@@ -45,7 +45,7 @@ public class Board {
         animals = new ArrayList<Animal>();
     } // Board:Board
 
-    public Board(int size, byte initialZebraCount, byte initialCheetahCount) {
+    public Board(int size, int initialZebraCount, int initialCheetahCount) {
         tickCounter = 0;
         this.size = size;
         scrambleList = false;
@@ -54,6 +54,7 @@ public class Board {
         animals = new ArrayList<Animal>();
     } // Board:Board
 
+    // Statisk metod som gör det lite enklare att skriva ut färgmeddelanden
     public static String pimpString(String title, int level) {
         String prefix;
 
@@ -84,6 +85,10 @@ public class Board {
     public static String pimpString(int number, int level) {
         String str = new String("" + number);
         return pimpString(str, level);
+    } // pimpString
+
+    public static String pimpString(double number, int level) {
+        return pimpString(String.format("%.5f", number), level);
     } // pimpString
 
     public void createAnimals() {
@@ -165,7 +170,7 @@ public class Board {
 
     private void printBoard() {
         System.out.printf("%s%nCurrent tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
-                "-".repeat(60), Board.pimpString((tickCounter + 1), Board.LEVEL_INFO),
+                "-".repeat(80), Board.pimpString((tickCounter + 1), Board.LEVEL_INFO),
                 Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
                 Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO),
                 Board.pimpString(getKillCount(), Board.LEVEL_BOLD));

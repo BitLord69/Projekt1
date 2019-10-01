@@ -14,7 +14,7 @@ public class BoardFactory {
         board = new Board();
     } // privat konstruktor
 
-    public static void createBoard(int size, byte initialZebraCount, byte initialCheetahCount) {
+    public static void createBoard(int size, int initialZebraCount, int initialCheetahCount) {
         board = new Board(size, initialZebraCount, initialCheetahCount);
     }
 
