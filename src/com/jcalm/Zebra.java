@@ -54,9 +54,9 @@ public class Zebra extends Animal {
         int deltaY = closestCheetah.coord.getY() - coord.getY();
         double cosV = deltaX / sorted.get(closestCheetah); // hämtar koordinaterna för den närmsta geparden
 
-        moveX = (int) Math.round((velocity * cosV)) * -1;
-        moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ?  -1 : 1)) * -1;
-        coord.moveDelta(moveX * -1, moveY * -1); // zebran förflyttar sig
+        moveX = (int) Math.round((velocity * cosV)) * -1; // -1 på slutet gör att zebran rör sig bort från geparden
+        moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ?  -1 : 1)) * -1; // samma som ovanstående kommentar
+        coord.moveDelta(moveX , moveY); // zebran förflyttar sig
 
         System.out.printf("\t%s%n\tI %s, %s:%s : Avstånd till närmaste gepard: %s -> ΔX: %s, ΔY: %s = %s%n", "-".repeat(40),
                 Board.pimpString("Zebra.move", Board.LEVEL_NORMAL),
