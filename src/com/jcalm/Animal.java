@@ -41,18 +41,20 @@ public abstract class Animal implements CollisionDetector {
     } // eat
 
     public void moveRandomly() {
-        // TODO: 2019-10-01 Calle, Lukas - Kommentera vad som händer i koden
+
         int x = coord.getX();
         int y = coord.getY();
-
+        // hämtar koordinaterna för det aktuella objektet
         int xMin = x - velocity;
-        int xMax = x + velocity;
+        int xMax = x + velocity; // sätter rörelsegränsen på x-axeln
         int yMin = y - velocity;
-        int yMax = y + velocity;
-        Random r = new Random();
+        int yMax = y + velocity;// sätter rörelsegränsen på y axeln
+        Random r = new Random(); // skapar ett objekt av klassen Random
 
-        int newCoordinateX = r.nextInt(xMax - xMin) + xMin;
-        int newCoordinateY = r.nextInt(yMax - yMin) + yMin;
+        int newCoordinateX = r.nextInt(xMax - xMin) + xMin; // slumpar fram ett x-värde inom rörelsegränsen
+        int newCoordinateY = r.nextInt(yMax - yMin) + yMin; // slumpar fram ett y-värde inom rörelsegränsen
+
+
 
         // TODO: 2019-10-01 Blir fel ibland: setX och setY kollar inte gränsvärden, så det kan bli negativa koordinater.
         //  Antingen lägger vi till kontoller i de moetoderna, eller använder moveDelta, som gör kontrollerna redan.
@@ -60,7 +62,7 @@ public abstract class Animal implements CollisionDetector {
         coord.setX(newCoordinateX);
         coord.setY(newCoordinateY);
         System.out.printf("\t\t%s - %s, %s: newX = %d, newY = %d%n", Board.pimpString("Animal.moveRandomly,", Board.LEVEL_NORMAL), Board.pimpString(getClass().getSimpleName(), Board.LEVEL_STRESSED ),this, newCoordinateX, newCoordinateY);
-    } // moveRandomly
+    }
 
     public void move() { // metod för att röra på djuren
         // TODO: 2019-09-29 När Zerba.move är klar, se om man eventuellt kan flytta upp delar av metoderna hit, eller åtminstone lyfta upp delar i andra metoder

@@ -67,7 +67,7 @@ public class Cheetah extends Animal {
     } // getBounds
 
     private boolean hadSnack(Animal a) {
-        // Kollar ifall det är en kollision och om så är fallet, om geparden fick sig en liten munsbit
+        // Kollar ifall det är en kollision och om så är fallet, om geparden fick sig en liten mumsbit
         boolean didEat = false;
 
         // Är geparden inom räckhåll?
