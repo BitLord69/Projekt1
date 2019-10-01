@@ -54,6 +54,9 @@ public abstract class Animal implements CollisionDetector {
         int newCoordinateX = r.nextInt(xMax - xMin) + xMin;
         int newCoordinateY = r.nextInt(yMax - yMin) + yMin;
 
+        // TODO: 2019-10-01 Blir fel ibland: setX och setY kollar inte gränsvärden, så det kan bli negativa koordinater.
+        //  Antingen lägger vi till kontoller i de moetoderna, eller använder moveDelta, som gör kontrollerna redan.
+        //  Bäst med moveDelta, eftersom vi då vet varifrån vi kommer och därför kan flippa koorrdinaterna
         coord.setX(newCoordinateX);
         coord.setY(newCoordinateY);
         System.out.printf("\t\t%s - %s, %s: newX = %d, newY = %d%n", Board.pimpString("Animal.moveRandomly,", Board.LEVEL_NORMAL), Board.pimpString(getClass().getSimpleName(), Board.LEVEL_STRESSED ),this, newCoordinateX, newCoordinateY);
@@ -158,8 +161,7 @@ public abstract class Animal implements CollisionDetector {
 
     // Implementering av interfacet CollisionDetercor
     public Rectangle getBounds() { // metod för att få djurens "radie"
-        Rectangle radar = new Rectangle(coord.getX(), coord.getY(), 1, 1);
-        return radar;
+        return new Rectangle(coord.getX(), coord.getY(), 1, 1);
     } // getBounds
 
     // Implementering av interfacet CollisionDetercor
