@@ -15,10 +15,16 @@ public class Board {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
+    public static final int LEVEL_NORMAL = 0;
+    public static final int LEVEL_BOLD = 1;
+    public static final int LEVEL_STRESSED = 2;
+
     public static final byte MAX_ZEBRA_VELOCITY = 3;
     public static final byte MAX_CHEETAH_VELOCITY = 6;
     public static final byte MAX_COMA_COUNTER = 3;
     public static final int CHEETAH_STARVATION_RATE = 2;
+    public static final int CHEETAH_RANDOM_MOVE_RATIO = 10;
+    public static final int ZEBRA_RANDOM_MOVE_RATIO = 30;
 
     public static final int DELAY_IN_MILLIS = 250;
 
@@ -27,12 +33,12 @@ public class Board {
     private int tickCounter;
     private byte initialZebraCount;
     private byte initialCheetahCount;
-    private boolean scambleList;
+    private boolean scrambleList;
 
     public Board() {
         size = 20;
         tickCounter = 0;
-        scambleList = false;
+        scrambleList = false;
         initialZebraCount = 0;
         initialCheetahCount = 0;
         animals = new ArrayList<Animal>();
@@ -41,11 +47,34 @@ public class Board {
     public Board(int size, byte initialZebraCount, byte initialCheetahCount) {
         tickCounter = 0;
         this.size = size;
-        scambleList = false;
+        scrambleList = false;
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
         animals = new ArrayList<Animal>();
     } // Board:Board
+
+    public static String pimpString(String title, int level) {
+        String prefix;
+
+        switch (level){
+            case LEVEL_NORMAL:
+                prefix = ANSI_GREEN;
+                break;
+
+            case LEVEL_BOLD:
+                prefix = ANSI_RED;
+                break;
+
+            case LEVEL_STRESSED:
+                prefix = ANSI_YELLOW;
+                break;
+
+            default:
+                prefix = "";
+        } // switch
+
+        return prefix + title + ANSI_RESET;
+    } // enhanceMethodName
 
     public void createAnimals() {
         for (int i = 0; i < initialZebraCount; i++) {
@@ -87,8 +116,8 @@ public class Board {
             tickCounter++;
 
             // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
-            // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland) 
-            if (scambleList) {
+            // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland)
+            if (scrambleList) {
                 Collections.shuffle(animals);
             } // if scrambleList...
 
@@ -158,7 +187,7 @@ public class Board {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(String.format("Board: size = %d, initialZebraCount = %d, initialCheetahCount = %d, scrambleList = %b, animals [%d] = %n", size, initialZebraCount, initialCheetahCount, scambleList, animals.size()));
+        StringBuilder sb = new StringBuilder(String.format("Board: size = %d, initialZebraCount = %d, initialCheetahCount = %d, scrambleList = %b, animals [%d] = %n", size, initialZebraCount, initialCheetahCount, scrambleList, animals.size()));
 
         for (Animal a : animals) {
             sb.append(String.format("\t\t%s%n", a));
