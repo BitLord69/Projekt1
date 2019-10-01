@@ -3,7 +3,6 @@ package com.jcalm;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class Zebra extends Animal {
 
@@ -16,6 +15,11 @@ public class Zebra extends Animal {
     } // Zebra:Zebra
 
     public void move() {
+        // Kolla om zebran ska flytta sig slumpartat
+        if (getRandomPercentage() < Board.ZEBRA_RANDOM_MOVE_RATIO) {
+            moveRandomly();
+            return;
+        } // if getRandomPercentage...
 
         //  moveRandom();
         ArrayList<Animal> animals = BoardFactory.getBoard().getAnimals();
@@ -27,8 +31,8 @@ public class Zebra extends Animal {
             if (a != this && a.isPredator() && !a.isDead()) {
 
             }
-            }
-
-
         }
+
+
     }
+}
