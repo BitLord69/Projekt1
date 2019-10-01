@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         int world = getWorldSize();
         int zebras = getZebras();
-        BoardFactory.createBoard(world, (byte) zebras, (byte) getCheetahs(zebras));
+        BoardFactory.createBoard(world, zebras, getCheetahs(zebras));
         BoardFactory.getBoard().createAnimals();
         System.out.printf("I main, innan start: %n%s", BoardFactory.getBoard());
         BoardFactory.getBoard().runSimulation();
@@ -27,17 +27,17 @@ public class Main {
         System.out.println("Hur stor vill du att spelplanen ska vara? ");
         worldSize = s.nextInt();
         return worldSize;
-    }
+    } // getWorldSize
 
-    public static byte getZebras() {
+    public static int getZebras() {
         int numOfZebras = 0;
         Scanner s = new Scanner(System.in);
         System.out.println("Hur många zebror vill du ha? ");
         numOfZebras = s.nextInt();
-        return (byte) numOfZebras;
-    }
+        return numOfZebras;
+    } // getZebras
 
-    public static byte getCheetahs(int zebras) {
+    public static int  getCheetahs(int zebras) {
         int numOfCheetahs = 0;
         Scanner s = new Scanner(System.in);
         do {
@@ -51,10 +51,6 @@ public class Main {
 
         } while (numOfCheetahs >= zebras);
 
-
-        return (byte) numOfCheetahs;
-
-    }
-
-
+        return numOfCheetahs;
+    } // getCheetahs
 } // class Main
