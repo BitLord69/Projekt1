@@ -39,8 +39,9 @@ public abstract class Animal implements CollisionDetector {
         // TODO: 2019-09-29 Kontrollera mha procentkoll om bytet äts.
         return false;
     } // eat
-    public void moveRandom() {
-        // TODO: 2019-09-29 Lägg in zebrans flytt. Börja med eventuell slumpvis flytt och om inte detta, unvdik geparder
+
+    public void moveRandomly() {
+        // TODO: 2019-10-01 Calle, Lukas - Kommentera vad som händer i koden
         int x = coord.getX();
         int y = coord.getY();
 
@@ -55,9 +56,8 @@ public abstract class Animal implements CollisionDetector {
 
         coord.setX(newCoordinateX);
         coord.setY(newCoordinateY);
-        System.out.printf("newX = %d, newY = %d", newCoordinateX, newCoordinateY);
-        System.out.printf("\t%s%n\tI %sCheetah.move%s - detta djur: %s%n", "-".repeat(30), Board.ANSI_GREEN, Board.ANSI_RESET, this);
-    }
+        System.out.printf("\t\t%s - %s, %s: newX = %d, newY = %d%n", Board.pimpString("Animal.moveRandomly,", Board.LEVEL_NORMAL), Board.pimpString(getClass().getSimpleName(), Board.LEVEL_STRESSED ),this, newCoordinateX, newCoordinateY);
+    } // moveRandomly
 
     public void move() { // metod för att röra på djuren
         // TODO: 2019-09-29 När Zerba.move är klar, se om man eventuellt kan flytta upp delar av metoderna hit, eller åtminstone lyfta upp delar i andra metoder
@@ -135,10 +135,8 @@ public abstract class Animal implements CollisionDetector {
         } */
     } // move
 
-    public double getRandomPercentage() { // metod för att slumpa ett tal från 1-100
-        int random;
-        random = (int) (Math.random() * 100) + 1; // random = ett tal mellan 0-100
-        return random;
+    public int getRandomPercentage() { // metod för att slumpa ett tal från 1-100
+        return (int) (Math.random() * 100) + 1; // random = ett tal mellan 0-100
     } // getRandomPercentage
 
     public boolean isPredator() {
@@ -151,6 +149,7 @@ public abstract class Animal implements CollisionDetector {
 
     public void setDead(boolean dead) {
         this.dead = dead;
+        System.out.printf("\t\t\tI %s - %s dog och skickas direkt till himlen!%n", Board.pimpString("Animal.setDead", Board.LEVEL_BOLD), this);
     } // setDead
 
     public Coordinate getCoord() {
@@ -159,7 +158,6 @@ public abstract class Animal implements CollisionDetector {
 
     // Implementering av interfacet CollisionDetercor
     public Rectangle getBounds() { // metod för att få djurens "radie"
-        // TODO: 2019-09-29 Lägg till så att rektangeln täcker in hur långt djuret kan gå per runda (x och y hamnar då i mitten i normalfallet)
         Rectangle radar = new Rectangle(coord.getX(), coord.getY(), 1, 1);
         return radar;
     } // getBounds
