@@ -44,10 +44,11 @@ public class Cheetah extends Animal {
             moveX = (int) Math.round((velocity * cosV));
             moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1));
             coord.moveDelta(moveX, moveY);
-            starve();
 
             System.out.printf("\tI %s, %s: Avstånd till närmaste zebra: %s: %f, move(X): %d, move(Y): %d%n",
                     Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), this.getCoord(), closestZebra, sorted.get(closestZebra), moveX, moveY);
+
+            starve();
         } // if sorted...
         else {
             System.out.printf("\tI %s, försöker äta zebra: %s: %f%n", Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), closestZebra, sorted.get(closestZebra));
