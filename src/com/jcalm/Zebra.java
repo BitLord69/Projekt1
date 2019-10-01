@@ -23,24 +23,23 @@ public class Zebra extends Animal {
         if (getRandomPercentage() < Board.ZEBRA_RANDOM_MOVE_RATIO) { // om det slumpade talet är större än konstanten 30
             moveRandomly(); // gå åt ett slumpartat håll
             return;
-        }
+        } // if getRandomPercentage
 
         ArrayList<Animal> animals = BoardFactory.getBoard().getAnimals(); // hämtar alla djur från spelbrädet
         Map<Animal, Double> distances = new HashMap<>(); // skapar en ny hashmap
 
-        // System.out.printf("\t%s%n\tI %sCheetah.move%s - detta djur: %s%n", "-".repeat(30), Board.ANSI_GREEN, Board.ANSI_RESET, this);
-
         for (Animal a : animals) {
-
             if (a != this && a.isPredator() && !a.isDead()) { // om inte detta djuret, och om detta djuret är en predator, och om detta djuret inte är dött så...
                 int deltaX = a.coord.getX() - coord.getX();
                 int deltaY = a.coord.getY() - coord.getY();
                 double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);  // räknar ut avståndet till det aktuella objektet
                 distances.put(a, dist); // lägger in avståndet i hashmapen
-            }
-        }
-        int moveX, moveY;
+            } // if a...
+        } // for a...
 
+        int moveX, moveY;
+        int traceX = coord.getX();
+        int traceY = coord.getY();
 
         Map<Animal, Double> sorted = distances // ber hashmapen att sortera alla avstånd
                 .entrySet()
@@ -55,13 +54,17 @@ public class Zebra extends Animal {
         int deltaY = closestCheetah.coord.getY() - coord.getY();
         double cosV = deltaX / sorted.get(closestCheetah); // hämtar koordinaterna för den närmsta geparden
 
-
         moveX = (int) Math.round((velocity * cosV));
         moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1));
         coord.moveDelta(moveX, moveY); // zebran förflyttar sig
 
-    }
-
-
-
-}
+        System.out.printf("\t%s%n\tI %s, %s:%s : Avstånd till närmaste gepard: %s -> ΔX: %s, ΔY: %s = %s%n", "-".repeat(40),
+                Board.pimpString("Zebra.move", Board.LEVEL_NORMAL),
+                Board.pimpString(traceX, Board.LEVEL_INFO),
+                Board.pimpString(traceY, Board.LEVEL_INFO),
+                Board.pimpString(sorted.get(closestCheetah), Board.LEVEL_INFO),
+                Board.pimpString(moveX, Board.LEVEL_INFO),
+                Board.pimpString(moveY, Board.LEVEL_INFO),
+                coord);
+    } // move
+} // class Zebra
