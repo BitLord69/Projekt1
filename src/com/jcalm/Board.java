@@ -18,6 +18,7 @@ public class Board {
     public static final int LEVEL_NORMAL = 0;
     public static final int LEVEL_BOLD = 1;
     public static final int LEVEL_STRESSED = 2;
+    public static final int LEVEL_INFO = 3;
 
     public static final byte MAX_ZEBRA_VELOCITY = 3;
     public static final byte MAX_CHEETAH_VELOCITY = 6;
@@ -31,8 +32,8 @@ public class Board {
     private int size;
     private ArrayList<Animal> animals;
     private int tickCounter;
-    private byte initialZebraCount;
-    private byte initialCheetahCount;
+    private int initialZebraCount;
+    private int initialCheetahCount;
     private boolean scrambleList;
 
     public Board() {
@@ -44,7 +45,7 @@ public class Board {
         animals = new ArrayList<Animal>();
     } // Board:Board
 
-    public Board(int size, byte initialZebraCount, byte initialCheetahCount) {
+    public Board(int size, int initialZebraCount, int initialCheetahCount) {
         tickCounter = 0;
         this.size = size;
         scrambleList = false;
@@ -53,10 +54,11 @@ public class Board {
         animals = new ArrayList<Animal>();
     } // Board:Board
 
+    // Statisk metod som gör det lite enklare att skriva ut färgmeddelanden
     public static String pimpString(String title, int level) {
         String prefix;
 
-        switch (level){
+        switch (level) {
             case LEVEL_NORMAL:
                 prefix = ANSI_GREEN;
                 break;
@@ -69,12 +71,25 @@ public class Board {
                 prefix = ANSI_YELLOW;
                 break;
 
+            case LEVEL_INFO:
+                prefix = ANSI_BLUE;
+                break;
+
             default:
                 prefix = "";
         } // switch
 
         return prefix + title + ANSI_RESET;
-    } // enhanceMethodName
+    } // pimpString
+
+    public static String pimpString(int number, int level) {
+        String str = new String("" + number);
+        return pimpString(str, level);
+    } // pimpString
+
+    public static String pimpString(double number, int level) {
+        return pimpString(String.format("%.5f", number), level);
+    } // pimpString
 
     public void createAnimals() {
         for (int i = 0; i < initialZebraCount; i++) {
@@ -129,7 +144,7 @@ public class Board {
             } // catch
 
             quit = getZebraCount() == 0 || getCheetahCount() == 0; // || tickCounter >= 10;
-        }  //while (!quit)
+        }  // while (!quit)
         printResult();
 
         return 0;
@@ -147,18 +162,18 @@ public class Board {
     } // cleanupBoard
 
     private void printResult() {
-        System.out.println("\nTack för att du spelade. Simuleringen tog " + ANSI_BLUE + tickCounter + ANSI_RESET + " ticks.");
-        System.out.printf("%s%d/%d%s zebror och %s%d/%d%s geopard(er) överlevde spelet",
-                ANSI_BLUE, getZebraCount(), initialZebraCount, ANSI_RESET,
-                ANSI_BLUE, getCheetahCount(), initialCheetahCount, ANSI_RESET);
+        System.out.printf("%nTack för att du spelade! Simuleringen tog %s ticks.%n", Board.pimpString(tickCounter, Board.LEVEL_INFO));
+        System.out.printf("%s zebror och %s geopard(er) överlevde spelet",
+                Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
+                Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO));
     } // printResult
 
     private void printBoard() {
-        System.out.printf("%s%nCurrent tick count: %s%d%s, antalet zebror: %s%d/%d%s, antal geparder: %s%d/%d%s, kill count: %s%d%s%n",
-                "-".repeat(60), ANSI_BLUE, (tickCounter + 1), ANSI_RESET,
-                ANSI_BLUE, getZebraCount(), initialZebraCount, ANSI_RESET,
-                ANSI_BLUE, getCheetahCount(), initialCheetahCount, ANSI_RESET,
-                ANSI_RED, getKillCount(), ANSI_RESET);
+        System.out.printf("%s%nCurrent tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
+                "-".repeat(80), Board.pimpString((tickCounter + 1), Board.LEVEL_INFO),
+                Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
+                Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO),
+                Board.pimpString(getKillCount(), Board.LEVEL_BOLD));
 //        for (Animal a : animals)
 //            System.out.printf("%s%n", a);
     } // printBoard
