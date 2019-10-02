@@ -135,8 +135,8 @@ public class Board extends Canvas {
         return animals;
     } // getAnimals
 
-    public byte getKillCount() {
-        return (byte) (initialZebraCount - getZebraCount());
+    public int getKillCount() {
+        return initialZebraCount - getZebraCount();
     } // getKillCount
 
     public byte runSimulation() {
@@ -255,8 +255,8 @@ public class Board extends Canvas {
                 Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO));
     } // printResult
 
-    public byte getZebraCount() {
-        byte zebras = 0;
+    public int getZebraCount() {
+        int zebras = 0;
         for (Animal a : animals) {
             if (a instanceof Zebra) {
                 zebras++;
@@ -266,8 +266,8 @@ public class Board extends Canvas {
         return zebras;
     } // getZebraCount
 
-    public byte getCheetahCount() {
-        byte cheetahs = 0;
+    public int getCheetahCount() {
+        int cheetahs = 0;
         for (Animal a : animals) {
             if (a instanceof Cheetah) {
                 cheetahs++;
