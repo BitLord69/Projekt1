@@ -48,7 +48,6 @@ public class Cheetah extends Animal {
             int deltaY = closestZebra.coord.getY() - coord.getY();
             double cosV = deltaX / sorted.get(closestZebra);
 
-            // TODO: 2019-09-29 Om man vill att geparder ska gå slumpartad längd, ändra i formeln nedan
             moveX = (int) Math.round((velocity * cosV));
             moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1));
             coord.moveDelta(moveX, moveY);
@@ -167,7 +166,7 @@ public class Cheetah extends Animal {
 
         gImg.setColor(new Color(211, 211, 211, 50));
         gImg.fillRect(0, 0, squareWidth, squareHeight * 2);
-        gImg.setColor(Color.WHITE);
+        gImg.setColor(new Color(250, 250, 250, 75));
         gImg.drawLine(0, 0, squareWidth, squareHeight); // \
         gImg.drawLine(0, squareHeight, squareWidth, 0); // /
         Rectangle2D rect = new Rectangle2D.Double(0, 0, squareWidth, squareHeight);
@@ -175,7 +174,7 @@ public class Cheetah extends Animal {
         g2d.setPaint(new TexturePaint(bufferedImage, rect));
         g2d.fill(new Ellipse2D.Double(x - velocity * squareWidth + squareWidth / 2, y - velocity * squareHeight + squareHeight / 2, velocity * squareWidth * 2, velocity * squareHeight * 2));
 
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(foodComaCounter > 0 ? Color.RED : Color.BLACK);
         g2d.fillRoundRect(x, y, squareWidth, squareHeight, 2, 2);
 
         // Slumpa ut gula prickar

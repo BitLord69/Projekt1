@@ -141,7 +141,7 @@ public class Board extends Canvas {
 
     public byte runSimulation() {
         boolean quit = false;
-        BufferStrategy bs;
+        BufferStrategy bs = null;
 
         while (!quit) {
             bs = this.getBufferStrategy();
@@ -161,28 +161,32 @@ public class Board extends Canvas {
                 tickCounter++;
                 window.update();
 
+                quit = (getZebraCount() == 0 || getCheetahCount() == 0); // || tickCounter >= 10;
+
                 // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
                 // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland)
                 if (scrambleList) {
                     Collections.shuffle(animals);
                 } // if scrambleList...
 
-                quit = getZebraCount() == 0 || getCheetahCount() == 0; // || tickCounter >= 10;
-
                 if (quit) {
-                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                    printBoard(g);
                     Graphics2D g2d = (Graphics2D) g;
-                    Font font = new Font("Serif", Font.PLAIN, 48);
 
-                    FontMetrics metrics = g2d.getFontMetrics(font);
                     String s = "G A M E    O V E R";
-
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Font font = new Font("Serif", Font.PLAIN, 72);
+                    FontMetrics metrics = g.getFontMetrics(font);
+                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
                     g2d.setFont(font);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2d.setColor(Color.RED);
-
                     Rectangle2D r = metrics.getStringBounds(s, g2d);
-                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, (int) (dim.getHeight() - r.getWidth()) / 2);
+                    int yText = (int) (dim.getHeight() - r.getHeight()) / 2;
+                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, yText);
+                    s = (getCheetahCount() == 0) ? "Zebrorna vann!!!" : "Geparderna vann!";
+                    r = metrics.getStringBounds(s, g2d);
+                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, yText + (int) r.getHeight());
+                    bs.show();
                 } // if quit...
 
                 bs.show();

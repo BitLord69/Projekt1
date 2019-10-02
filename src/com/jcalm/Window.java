@@ -17,11 +17,12 @@ public class Window {
         this.board = board;
 
         frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(true);
+        frame.setAlwaysOnTop(true);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(board);
         frame.setVisible(true);
-        frame.setAlwaysOnTop(true);
     } // Window:Window
 
     public void update(){
