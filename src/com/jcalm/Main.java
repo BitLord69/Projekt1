@@ -10,7 +10,6 @@ Huvudprogrammet för simuleringen
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
         int world = getWorldSize();
         int zebras = getZebras();
@@ -21,27 +20,27 @@ public class Main {
     }  // main
 
     public static int getWorldSize() {
-        int worldSize = 0;
+        int worldSize;
         Scanner s = new Scanner(System.in);
         System.out.println("Hej och välkommen till världens bästa spel");
-        System.out.println("Hur stor vill du att spelplanen ska vara? ");
+        System.out.print("Hur stor vill du att spelplanen ska vara? ");
         worldSize = s.nextInt();
         return worldSize;
     } // getWorldSize
 
     public static int getZebras() {
-        int numOfZebras = 0;
+        int numOfZebras;
         Scanner s = new Scanner(System.in);
-        System.out.println("Hur många zebror vill du ha? ");
+        System.out.print("Hur många zebror vill du ha? ");
         numOfZebras = s.nextInt();
         return numOfZebras;
     } // getZebras
 
-    public static int  getCheetahs(int zebras) {
-        int numOfCheetahs = 0;
+    public static int getCheetahs(int zebras) {
+        int numOfCheetahs;
         Scanner s = new Scanner(System.in);
         do {
-            System.out.println("Hur många geoparder vill du ha? ");
+            System.out.print("Hur många geoparder vill du ha? ");
             numOfCheetahs = s.nextInt();
             if (numOfCheetahs >= zebras) {
                 System.out.println("Geoparder får inte vara fler eller ha samma antal som Zebras," +

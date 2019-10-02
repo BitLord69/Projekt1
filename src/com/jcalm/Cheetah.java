@@ -1,6 +1,9 @@
 package com.jcalm;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,7 +17,7 @@ public class Cheetah extends Animal {
 
     public Cheetah() { // default konstruktor
         super(true, Board.MAX_CHEETAH_VELOCITY);
-    } // Cheetah:Cheetah*
+    } // Cheetah:Cheetah
 
     public Cheetah(byte velocity) { // skapar en konstruktor med en byte som inparameter, sätter boolean predator till true och skickar dem till Animal
         super(true, velocity);
@@ -45,7 +48,6 @@ public class Cheetah extends Animal {
             int deltaY = closestZebra.coord.getY() - coord.getY();
             double cosV = deltaX / sorted.get(closestZebra);
 
-            // TODO: 2019-09-29 Om man vill att geparder ska gå slumpartad längd, ändra i formeln nedan
             moveX = (int) Math.round((velocity * cosV));
             moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1));
             coord.moveDelta(moveX, moveY);
@@ -144,6 +146,45 @@ public class Cheetah extends Animal {
             moveToClosest(distances);
         } // if !hasEaten...
     } // move
+
+    @Override
+    public void render(Graphics g) {
+        int squareWidth = BoardFactory.getBoard().getMapSquareWidth();
+        int squareHeight = BoardFactory.getBoard().getMapSquareHeight();
+
+        int x = coord.getX() * squareWidth;
+        int y = coord.getY() * squareHeight;
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.drawOval(x - velocity * squareWidth + squareWidth / 2, y - velocity * squareHeight + squareHeight / 2, velocity * squareWidth * 2, velocity * squareHeight * 2);
+
+        BufferedImage bufferedImage = new BufferedImage(squareWidth, squareHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gImg = bufferedImage.createGraphics();
+
+        gImg.setColor(new Color(211, 211, 211, 50));
+        gImg.fillRect(0, 0, squareWidth, squareHeight * 2);
+        gImg.setColor(new Color(250, 250, 250, 75));
+        gImg.drawLine(0, 0, squareWidth, squareHeight); // \
+        gImg.drawLine(0, squareHeight, squareWidth, 0); // /
+        Rectangle2D rect = new Rectangle2D.Double(0, 0, squareWidth, squareHeight);
+
+        g2d.setPaint(new TexturePaint(bufferedImage, rect));
+        g2d.fill(new Ellipse2D.Double(x - velocity * squareWidth + squareWidth / 2, y - velocity * squareHeight + squareHeight / 2, velocity * squareWidth * 2, velocity * squareHeight * 2));
+
+        g2d.setColor(foodComaCounter > 0 ? Color.RED : Color.BLACK);
+        g2d.fillRoundRect(x, y, squareWidth, squareHeight, 2, 2);
+
+        // Slumpa ut gula prickar
+        g2d.setColor(Color.YELLOW);
+        for (int i = 0; i < 15; i++) {
+            int x1 = (int)(Math.random() * squareWidth + 0.5);
+            int y1 = (int)(Math.random() * squareHeight + 0.5);
+            g2d.drawLine(x + x1, y + y1, x + x1, y + y1);
+        } // for i...
+    } // render
 
     private void starve() {
         full -= Board.CHEETAH_STARVATION_RATE;

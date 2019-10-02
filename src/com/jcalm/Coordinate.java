@@ -12,7 +12,7 @@ public class Coordinate {
 
 
     public Coordinate(int x, int y) {
-        int size = BoardFactory.getBoard().getSize();
+        int size = BoardFactory.getBoard().getBoardSize();
 
         if (x > 0) {
             if (x > size)
@@ -52,7 +52,7 @@ public class Coordinate {
     }
 
     public void moveDelta(int deltaX, int deltaY) {
-        int size = BoardFactory.getBoard().getSize();
+        int size = BoardFactory.getBoard().getBoardSize();
 
         int newX = x + deltaX;
         int newY = y + deltaY;

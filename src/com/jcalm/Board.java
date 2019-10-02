@@ -1,10 +1,16 @@
 package com.jcalm;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class Board {
+public class Board extends Canvas {
+    public static final int GUI_HEIGHT = 768;
+    public static final int GUI_WIDTH = 1024;
+
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -35,6 +41,7 @@ public class Board {
     private int initialZebraCount;
     private int initialCheetahCount;
     private boolean scrambleList;
+    private Window window;
 
     public Board() {
         size = 20;
@@ -43,6 +50,7 @@ public class Board {
         initialZebraCount = 0;
         initialCheetahCount = 0;
         animals = new ArrayList<Animal>();
+        window = new Window(GUI_WIDTH, GUI_HEIGHT, "Savannsimulator v.0.5", this);
     } // Board:Board
 
     public Board(int size, int initialZebraCount, int initialCheetahCount) {
@@ -52,6 +60,7 @@ public class Board {
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
         animals = new ArrayList<Animal>();
+        window = new Window(GUI_WIDTH, GUI_HEIGHT, "Savannsimulator v.0.5", this);
     } // Board:Board
 
     // Statisk metod som gör det lite enklare att skriva ut färgmeddelanden
@@ -83,7 +92,7 @@ public class Board {
     } // pimpString
 
     public static String pimpString(int number, int level) {
-        String str = new String("" + number);
+        String str = "" + number;
         return pimpString(str, level);
     } // pimpString
 
@@ -103,12 +112,24 @@ public class Board {
 
     public void killAnimal(Animal a) {
         a.setDead(true);
-//        animals.remove(a);
     } // killAnimal
 
-    public int getSize() {
+    public int getBoardSize() {
         return size;
     } // getSize
+
+    // returns the width of each map square
+    public int getMapSquareWidth() {
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        return (int) dim.getWidth() / size;
+    } // getMapSquareSize
+
+    // returns the height of each map square
+    public int getMapSquareHeight() {
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        return (int) dim.getHeight() / size;
+    } // getMapSquareHeight
 
     public ArrayList<Animal> getAnimals() {
         return animals;
@@ -120,33 +141,67 @@ public class Board {
 
     public byte runSimulation() {
         boolean quit = false;
+        BufferStrategy bs = null;
+
         while (!quit) {
-            printBoard();
+            bs = this.getBufferStrategy();
+            if (bs == null) {
+                this.createBufferStrategy(3);
+            } // if bs...
+            else {
+                Graphics g = bs.getDrawGraphics();
+                printBoard(g);
 
-            for (Animal a : animals) {
-                a.move();
-            } // for a...
+                for (Animal a : animals) {
+                    a.move();
+                    a.render(g);
+                } // for a...
 
-            cleanupBoard();
-            tickCounter++;
+                cleanupBoard();
+                tickCounter++;
+                window.update();
 
-            // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
-            // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland)
-            if (scrambleList) {
-                Collections.shuffle(animals);
-            } // if scrambleList...
+                quit = (getZebraCount() == 0 || getCheetahCount() == 0); // || tickCounter >= 10;
 
-            // Fördröj spelet lite så att det går att läsa utskrifterna
-            try {
-                TimeUnit.MILLISECONDS.sleep(DELAY_IN_MILLIS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } // catch
+                // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
+                // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland)
+                if (scrambleList) {
+                    Collections.shuffle(animals);
+                } // if scrambleList...
 
-            quit = getZebraCount() == 0 || getCheetahCount() == 0; // || tickCounter >= 10;
+                if (quit) {
+                    printBoard(g);
+                    Graphics2D g2d = (Graphics2D) g;
+
+                    String s = "G A M E    O V E R";
+                    Font font = new Font("Serif", Font.PLAIN, 72);
+                    FontMetrics metrics = g.getFontMetrics(font);
+                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                    g2d.setFont(font);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(Color.RED);
+                    Rectangle2D r = metrics.getStringBounds(s, g2d);
+                    int yText = (int) (dim.getHeight() - r.getHeight()) / 2;
+                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, yText);
+                    s = (getCheetahCount() == 0) ? "Zebrorna vann!!!" : "Geparderna vann!";
+                    r = metrics.getStringBounds(s, g2d);
+                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, yText + (int) r.getHeight());
+                    bs.show();
+                } // if quit...
+
+                bs.show();
+                g.dispose();
+
+                // Fördröj spelet lite så att det går att läsa utskrifterna
+                try {
+                    TimeUnit.MILLISECONDS.sleep(DELAY_IN_MILLIS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } // catch
+            } // else
         }  // while (!quit)
-        printResult();
 
+        printResult();
         return 0;
     } // runSimulation
 
@@ -161,6 +216,38 @@ public class Board {
             animals.remove(a);
     } // cleanupBoard
 
+    private void printBoard(Graphics g) {
+        String message = String.format("%s%nCurrent tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
+                "-".repeat(80),
+                Board.pimpString((tickCounter + 1), Board.LEVEL_INFO),
+                Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
+                Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO),
+                Board.pimpString(getKillCount(), Board.LEVEL_BOLD));
+        System.out.print(message);
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setColor(Color.GREEN);
+        g2d.fillRect(0, 0, (int) dim.getWidth(), (int) dim.getHeight());
+
+        Font font = new Font("Serif", Font.PLAIN, 20);
+        g2d.setFont(font);
+        g2d.setColor(Color.BLACK);
+
+        message = String.format("Current tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
+                (tickCounter + 1),
+                getZebraCount() + "/" + initialZebraCount,
+                getCheetahCount() + "/" + initialCheetahCount,
+                getKillCount());
+
+        // Justera så att texten hamnar i mitten
+        FontMetrics metrics = g.getFontMetrics(font);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        int x = (int) (dim.getWidth() - metrics.stringWidth(message)) / 2;
+        g2d.drawString(message, x, 20);
+    } // printBoard
+
     private void printResult() {
         System.out.printf("%nTack för att du spelade! Simuleringen tog %s ticks.%n", Board.pimpString(tickCounter, Board.LEVEL_INFO));
         System.out.printf("%s zebror och %s geopard(er) överlevde spelet",
@@ -168,17 +255,7 @@ public class Board {
                 Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO));
     } // printResult
 
-    private void printBoard() {
-        System.out.printf("%s%nCurrent tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
-                "-".repeat(80), Board.pimpString((tickCounter + 1), Board.LEVEL_INFO),
-                Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
-                Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO),
-                Board.pimpString(getKillCount(), Board.LEVEL_BOLD));
-//        for (Animal a : animals)
-//            System.out.printf("%s%n", a);
-    } // printBoard
-
-    private byte getZebraCount() {
+    public byte getZebraCount() {
         byte zebras = 0;
         for (Animal a : animals) {
             if (a instanceof Zebra) {
@@ -189,7 +266,7 @@ public class Board {
         return zebras;
     } // getZebraCount
 
-    private byte getCheetahCount() {
+    public byte getCheetahCount() {
         byte cheetahs = 0;
         for (Animal a : animals) {
             if (a instanceof Cheetah) {
@@ -199,6 +276,10 @@ public class Board {
 
         return cheetahs;
     } // getZebraCount
+
+    public int getTickCounter() {
+        return tickCounter;
+    }
 
     @Override
     public String toString() {
