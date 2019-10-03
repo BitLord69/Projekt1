@@ -66,15 +66,12 @@ public class Cheetah extends Animal {
         // Kollar ifall det är en kollision och om så är fallet, om geparden fick sig en liten mumsbit
         boolean didEat = false;
 
-        // Är geparden inom räckhåll?
+        // Är geparden inom räckhåll för att slå en zebra?
         if (collide(a)) {
-            int tempX = a.coord.getX();
-            int tempY = a.coord.getY();
-
             // Lyckas geparden slå bytet?
             if (eat(a)) {
-                coord.setX(tempX);
-                coord.setY(tempY);
+                coord.setX(a.coord.getX());
+                coord.setY(a.coord.getY());
                 didEat = true;
                 System.out.printf("\t\tI %s - åt %s%n", Board.pimpString("Cheetah.hadSnack", Board.LEVEL_BOLD), a);
             } // if eat...

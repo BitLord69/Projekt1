@@ -155,7 +155,7 @@ public class Board extends Canvas {
 
                 for (Animal a : animals) {
                     a.move();
-                    a.render(g);§
+                    a.render(g);
                 } // for a...
 
                 cleanupBoard();

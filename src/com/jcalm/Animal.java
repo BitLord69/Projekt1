@@ -73,16 +73,14 @@ public abstract class Animal implements CollisionDetector {
         double cosV = deltaX / distance; // hämtar koordinaterna för den närmsta geparden
 
         int moveX = (int) Math.round((velocity * cosV)) * (isPredator() ? 1 : -1); // -1 på slutet gör att zebran rör sig bort från geparden
-        int moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (isPredator() ? 1 : -1)); // samma som ovanstående kommentar
-        coord.moveDelta(moveX, moveY); // zebran förflyttar sig
-
+        int moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV  * (deltaY < 0 ? -1 : 1) * (isPredator() ? 1 : -1)); // samma som ovanstående kommentar
+        coord.moveDelta(moveX, moveY); // djuret förflyttar sig
 
         if (isPredator()) {
             System.out.printf("\tI %s, %s : Avstånd till närmaste zebra: %s: %s -> ΔX: %s, ΔY: %s%n",
                     Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), this.getCoord(), a,
                     Board.pimpString(distance,Board.LEVEL_INFO),
                     Board.pimpString(moveX, Board.LEVEL_INFO), Board.pimpString(moveY, Board.LEVEL_INFO));
-
         }
         else {
             System.out.printf("\t%s%n\tI %s, %s:%s : Avstånd till närmaste gepard: %s -> ΔX: %s, ΔY: %s = %s%n", "-".repeat(40),
@@ -93,9 +91,8 @@ public abstract class Animal implements CollisionDetector {
                     Board.pimpString(moveX, Board.LEVEL_INFO),
                     Board.pimpString(moveY, Board.LEVEL_INFO),
                     coord);
-        }
-
-    }
+        } // else
+    } // moveToClosest
 
     public void move() { // metod för att röra på djuren
         // TODO: 2019-09-29 När Zerba.move är klar, se om man eventuellt kan flytta upp delar av metoderna hit, eller åtminstone lyfta upp delar i andra metoder
