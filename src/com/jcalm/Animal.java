@@ -51,7 +51,7 @@ public abstract class Animal implements CollisionDetector {
 
         int deltaX, deltaY;
         Random r = new Random(); // skapar ett objekt av klassen Random
-        //
+
         deltaX = r.nextInt(velocity + velocity) - velocity; // slumpar fram ett x-värde inom koordinat +- velocity
         deltaY = r.nextInt(velocity + velocity) - velocity; // slumpar fram ett värde y-värde inom koordinat +- velocity
         coord.moveDelta(deltaX, deltaY);
