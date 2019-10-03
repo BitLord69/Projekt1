@@ -4,8 +4,6 @@ import java.awt.*;
 import java.util.Random;
 
 public abstract class Animal implements CollisionDetector {
-    protected static final int HIT_RATE = 30; // konstant för Cheetah
-
     protected byte full;
     protected byte velocity;
     protected Coordinate coord; // skapar aggregat Coordinate till klassen Animal
