@@ -36,6 +36,13 @@ public abstract class Animal implements CollisionDetector {
 
     public abstract void render(Graphics g);
 
+    protected double calculateDistance(Animal a) { // metod för att räkna ut avstånd till närmsta djur
+        int deltaX = a.coord.getX() - coord.getX();
+        int deltaY = a.coord.getY() - coord.getY();
+        double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        return dist;
+    }
+
     public boolean eat(Animal dinner) { // metod för att äta *
         return false;
     } // eat
@@ -45,8 +52,8 @@ public abstract class Animal implements CollisionDetector {
         int deltaX, deltaY;
         Random r = new Random(); // skapar ett objekt av klassen Random
         //
-        deltaX = r.nextInt(velocity+velocity) - velocity; // slumpar fram ett x-värde inom koordinat +- velocity
-        deltaY = r.nextInt(velocity+velocity) - velocity; // slumpar fram ett värde y-värde inom koordinat +- velocity
+        deltaX = r.nextInt(velocity + velocity) - velocity; // slumpar fram ett x-värde inom koordinat +- velocity
+        deltaY = r.nextInt(velocity + velocity) - velocity; // slumpar fram ett värde y-värde inom koordinat +- velocity
         coord.moveDelta(deltaX, deltaY);
 
         System.out.printf("\t%s%n\t%s - %s, %s: newX = %s, newY = %s%n", "-".repeat(40),
@@ -56,6 +63,39 @@ public abstract class Animal implements CollisionDetector {
                 Board.pimpString(deltaX, Board.LEVEL_INFO),
                 Board.pimpString(deltaY, Board.LEVEL_INFO));
     } // moveRandomly
+
+    // metod för att
+    public void moveToClosest(Animal a, double distance) {
+        int traceX = coord.getX();
+        int traceY = coord.getY();
+        int deltaX = a.coord.getX() - coord.getX();
+        int deltaY = a.coord.getY() - coord.getY();
+        double cosV = deltaX / distance; // hämtar koordinaterna för den närmsta geparden
+
+        int moveX = (int) Math.round((velocity * cosV)) * (isPredator() ? 1 : -1); // -1 på slutet gör att zebran rör sig bort från geparden
+        int moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (isPredator() ? 1 : -1)); // samma som ovanstående kommentar
+        coord.moveDelta(moveX, moveY); // zebran förflyttar sig
+
+
+        if (isPredator()) {
+            System.out.printf("\tI %s, %s : Avstånd till närmaste zebra: %s: %s -> ΔX: %s, ΔY: %s%n",
+                    Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), this.getCoord(), a,
+                    Board.pimpString(distance,Board.LEVEL_INFO),
+                    Board.pimpString(moveX, Board.LEVEL_INFO), Board.pimpString(moveY, Board.LEVEL_INFO));
+
+        }
+        else {
+            System.out.printf("\t%s%n\tI %s, %s:%s : Avstånd till närmaste gepard: %s -> ΔX: %s, ΔY: %s = %s%n", "-".repeat(40),
+                    Board.pimpString("Zebra.move", Board.LEVEL_NORMAL),
+                    Board.pimpString(traceX, Board.LEVEL_INFO),
+                    Board.pimpString(traceY, Board.LEVEL_INFO),
+                    Board.pimpString(distance, Board.LEVEL_INFO),
+                    Board.pimpString(moveX, Board.LEVEL_INFO),
+                    Board.pimpString(moveY, Board.LEVEL_INFO),
+                    coord);
+        }
+
+    }
 
     public void move() { // metod för att röra på djuren
         // TODO: 2019-09-29 När Zerba.move är klar, se om man eventuellt kan flytta upp delar av metoderna hit, eller åtminstone lyfta upp delar i andra metoder
