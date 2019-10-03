@@ -24,8 +24,6 @@ public class Cheetah extends Animal {
     } // Cheetah:Cheetah
 
     private void moveToClosest(Map<Animal, Double> distances) {
-        int moveX, moveY;
-
         // Sortera inläggen på värdet så att vi enkelt kan hämta ut djuret närmast/längst bort.
         Map<Animal, Double> sorted = distances
                 .entrySet()
@@ -40,27 +38,18 @@ public class Cheetah extends Animal {
             return;
 
         Animal closestZebra = sorted.keySet().iterator().next();
+        double distanceToClosest = sorted.get(closestZebra);
 
         // Hamnar geparden utanför strike zone? I så fall gå så långt som möjligt mot zebran
-        if (sorted.get(closestZebra) >= velocity) {
-            // Använd cosinus-satsen för att beräkna nya x och y
-            int deltaX = closestZebra.coord.getX() - coord.getX();
-            int deltaY = closestZebra.coord.getY() - coord.getY();
-            double cosV = deltaX / sorted.get(closestZebra);
-
-            moveX = (int) Math.round((velocity * cosV));
-            moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1));
-            coord.moveDelta(moveX, moveY);
-
-            System.out.printf("\tI %s, %s : Avstånd till närmaste zebra: %s: %s -> ΔX: %s, ΔY: %s%n",
-                    Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), this.getCoord(), closestZebra,
-                    Board.pimpString(sorted.get(closestZebra), Board.LEVEL_INFO),
-                    Board.pimpString(moveX, Board.LEVEL_INFO), Board.pimpString(moveY, Board.LEVEL_INFO));
-
+        if ( distanceToClosest>= velocity) {
+            super.moveToClosest(closestZebra, distanceToClosest);
             starve();
-        } // if sorted...
+      } // if sorted...
         else {
-            System.out.printf("\tI %s, försöker äta zebra: %s: %f%n", Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL), closestZebra, sorted.get(closestZebra));
+            System.out.printf("\tI %s, försöker äta zebra: %s: %f%n",
+                    Board.pimpString("Cheetah.moveToClosest", Board.LEVEL_NORMAL),
+                    closestZebra,
+                    distanceToClosest);
             if (!hadSnack(closestZebra)) {
                 starve();
             } // if !hadSnack...
@@ -133,10 +122,7 @@ public class Cheetah extends Animal {
                     break;
                 } // if hadSnack...
                 else if (!movedRandomly) { // Lägg upp avstånden i en hashmap ifall geparden inte redan har förflyttat sig slumpartat
-                    int deltaX = a.coord.getX() - coord.getX();
-                    int deltaY = a.coord.getY() - coord.getY();
-                    double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-                    distances.put(a, dist);
+                    distances.put(a, calculateDistance(a));
                 } // else
             } // if a...
         } // for a...

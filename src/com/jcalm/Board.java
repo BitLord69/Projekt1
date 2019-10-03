@@ -32,6 +32,7 @@ public class Board extends Canvas {
     public static final int CHEETAH_STARVATION_RATE = 2;
     public static final int CHEETAH_RANDOM_MOVE_RATIO = 10;
     public static final int ZEBRA_RANDOM_MOVE_RATIO = 30;
+    public static final int ZEBRA_VISIBILITY = 2;
 
     public static final int DELAY_IN_MILLIS = 250;
 
@@ -154,7 +155,7 @@ public class Board extends Canvas {
 
                 for (Animal a : animals) {
                     a.move();
-                    a.render(g);
+                    a.render(g);§
                 } // for a...
 
                 cleanupBoard();
