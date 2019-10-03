@@ -178,7 +178,7 @@ public class Cheetah extends Animal {
     @Override
     public boolean eat(Animal dinner) {
         // Lyckas geparden slå bytet?
-        boolean killed = getRandomPercentage() < HIT_RATE;
+        boolean killed = getRandomPercentage() < Board.CHEETAH_HIT_RATE;
 
         System.out.printf("\t\tI %s - %s vill äta %s, lyckades döda: %b%n", Board.pimpString("Cheetah.eat", Board.LEVEL_BOLD), this, dinner, killed);
         if (killed) {
