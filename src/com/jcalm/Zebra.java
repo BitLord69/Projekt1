@@ -56,16 +56,9 @@ public class Zebra extends Animal {
 
         for (Animal a : animals) {
             if (a != this && a.isPredator() && !a.isDead()) { // om inte detta djuret, och om detta djuret är en predator, och om detta djuret inte är dött så...
-                int deltaX = a.coord.getX() - coord.getX();
-                int deltaY = a.coord.getY() - coord.getY();
-                double dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);  // räknar ut avståndet till det aktuella objektet
-                distances.put(a, dist); // lägger in avståndet i hashmapen
+                distances.put(a, calculateDistance(a));
             } // if a...
         } // for a...
-
-        int moveX, moveY;
-        int traceX = coord.getX();
-        int traceY = coord.getY();
 
         Map<Animal, Double> sorted = distances // ber hashmapen att sortera alla avstånd
                 .entrySet()
@@ -80,29 +73,16 @@ public class Zebra extends Animal {
             return;
 
         Animal closestCheetah = sorted.keySet().iterator().next(); // letar upp den närmsta geparden
+        double distanceToClosest = sorted.get(closestCheetah);
 
-        if (sorted.get(closestCheetah) > Board.MAX_CHEETAH_VELOCITY * 2) {
+        if (distanceToClosest > Board.MAX_CHEETAH_VELOCITY * Board.ZEBRA_VISIBILITY) {
             moveRandomly();
             System.out.printf("\t%s%n\tI %s, %s : Långt avstånd till närmaste gepard - tar ett glädjeskutt! %s%n", "-".repeat(40),
                     Board.pimpString("Zebra.move", Board.LEVEL_NORMAL),
-                    Board.pimpString(sorted.get(closestCheetah), Board.LEVEL_INFO),
+                    Board.pimpString(distanceToClosest, Board.LEVEL_INFO),
                     coord);
         } else {
-            int deltaX = closestCheetah.coord.getX() - coord.getX();
-            int deltaY = closestCheetah.coord.getY() - coord.getY();
-            double cosV = deltaX / sorted.get(closestCheetah); // hämtar koordinaterna för den närmsta geparden
-
-            moveX = (int) Math.round((velocity * cosV)) * -1; // -1 på slutet gör att zebran rör sig bort från geparden
-            moveY = (int) Math.round(Math.tan(Math.acos(cosV)) * velocity * cosV * (deltaY < 0 ? -1 : 1)) * -1; // samma som ovanstående kommentar
-            coord.moveDelta(moveX, moveY); // zebran förflyttar sig
-            System.out.printf("\t%s%n\tI %s, %s:%s : Avstånd till närmaste gepard: %s -> ΔX: %s, ΔY: %s = %s%n", "-".repeat(40),
-                    Board.pimpString("Zebra.move", Board.LEVEL_NORMAL),
-                    Board.pimpString(traceX, Board.LEVEL_INFO),
-                    Board.pimpString(traceY, Board.LEVEL_INFO),
-                    Board.pimpString(sorted.get(closestCheetah), Board.LEVEL_INFO),
-                    Board.pimpString(moveX, Board.LEVEL_INFO),
-                    Board.pimpString(moveY, Board.LEVEL_INFO),
-                    coord);
+            moveToClosest(closestCheetah, distanceToClosest);
         } // else
     } // move
 } // class Zebra
