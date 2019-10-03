@@ -50,10 +50,9 @@ public abstract class Animal implements CollisionDetector {
     public void moveRandomly() {
 
         int deltaX, deltaY;
-        Random r = new Random(); // skapar ett objekt av klassen Random
-        //
-        deltaX = r.nextInt(velocity + velocity) - velocity; // slumpar fram ett x-värde inom koordinat +- velocity
-        deltaY = r.nextInt(velocity + velocity) - velocity; // slumpar fram ett värde y-värde inom koordinat +- velocity
+
+        deltaX = (int) (Math.round(Math.random() * velocity) * Math.random() > 0.5 ? -1 : 1); // slumpar fram ett x-värde inom koordinat +- velocity
+        deltaY = (int) (Math.round(Math.random() * velocity) * Math.random() > 0.5 ? -1 : 1); // slumpar fram ett värde y-värde inom koordinat +- velocity
         coord.moveDelta(deltaX, deltaY);
 
         System.out.printf("\t%s%n\t%s - %s, %s: newX = %s, newY = %s%n", "-".repeat(40),
@@ -66,6 +65,7 @@ public abstract class Animal implements CollisionDetector {
 
     // metod för att
     public void moveToClosest(Animal a, double distance) {
+
         int traceX = coord.getX();
         int traceY = coord.getY();
         int deltaX = a.coord.getX() - coord.getX();
@@ -133,5 +133,7 @@ public abstract class Animal implements CollisionDetector {
         return String.format("Animal{predator: %b, dead: %b, full: %d, velocity: %d, koordinater: %s}", predator, dead, full, velocity, coord);
     } // toString
 } // class Animal
+
+
 
 
