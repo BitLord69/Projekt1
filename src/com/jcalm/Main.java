@@ -13,10 +13,12 @@ public class Main {
     public static void main(String[] args) {
         int world = getWorldSize();
         int zebras = getZebras();
-        BoardFactory.createBoard(world, zebras, getCheetahs(zebras));
-        BoardFactory.getBoard().createAnimals();
-        System.out.printf("I main, innan start: %n%s", BoardFactory.getBoard());
-        BoardFactory.getBoard().runSimulation();
+
+        new Window(world, zebras, getCheetahs(zebras));
+//        BoardFactory.createBoard(world, zebras, getCheetahs(zebras));
+//        BoardFactory.getBoard().createAnimals();
+//        System.out.printf("I main, innan start: %n%s", BoardFactory.getBoard());
+//        BoardFactory.getBoard().runSimulation();
     }  // main
 
     public static int getWorldSize() {

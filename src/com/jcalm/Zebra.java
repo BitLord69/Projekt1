@@ -33,13 +33,14 @@ public class Zebra extends Animal {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        BufferedImage bufferedImage = new BufferedImage(squareWidth, squareHeight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bufferedImage = new BufferedImage(squareWidth / 2, squareHeight / 2, BufferedImage.TYPE_INT_ARGB);
         Graphics2D gImg = bufferedImage.createGraphics();
 
-        gImg.fillRect(0, 0, squareWidth, squareHeight);
+        gImg.fillRect(0, 0, squareWidth / 2, squareHeight / 2);
+
         gImg.setColor(Color.BLACK);
-        gImg.drawLine(0, squareHeight, squareWidth, 0); // /
-        Rectangle2D rect = new Rectangle2D.Double(0, 0, squareWidth, squareHeight);
+        gImg.drawLine(0, squareHeight / 2, squareWidth / 2, 0); // /
+        Rectangle2D rect = new Rectangle2D.Double(0, 0, squareWidth / 2, squareHeight / 2);
 
         g2d.setPaint(new TexturePaint(bufferedImage, rect));
         g2d.fill(new RoundRectangle2D.Double(x, y, squareWidth, squareHeight, 2, 2));
