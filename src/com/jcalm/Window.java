@@ -28,12 +28,13 @@ public class Window extends JFrame implements ComponentListener {
         this.cheetahs = cheetahs;
 
         setTitle("Savannsimulator 1.2");
+        setPreferredSize(new Dimension(GUI_WIDTH, GUI_HEIGHT));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         setIgnoreRepaint(true);
         setResizable(true);
         setAlwaysOnTop(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setPreferredSize(new Dimension(GUI_WIDTH, GUI_HEIGHT));
 
         pack();
         setLocationRelativeTo(null);
@@ -65,7 +66,7 @@ public class Window extends JFrame implements ComponentListener {
 
     public void updateTitle(){
         Board b = BoardFactory.getBoard();
-        String s = String.format("Tick count: %4d, zebras: %d, cheetahs: %d, killed zebras: %d", b.getTickCounter(), b.getZebraCount(), b.getCheetahCount(), b.getKillCount());
+        String s = String.format("Tick count: %4d, zebras: %d, cheetahs: %d, killed zebras: %d", b.getGameAge(), b.getZebraCount(), b.getCheetahCount(), b.getKillCount());
         setTitle(s);
     } // updateTitle
 } // class Window
