@@ -10,7 +10,6 @@ public class Coordinate {
         y = 0;
     } // Coordinate:Coordinate
 
-
     public Coordinate(int x, int y) {
         int size = BoardFactory.getBoard().getBoardSize();
 

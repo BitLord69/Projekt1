@@ -1,16 +1,15 @@
 package com.jcalm;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class Board extends Canvas {
-    public static final int GUI_HEIGHT = 768;
-    public static final int GUI_WIDTH = 1024;
-
+public class Board extends JPanel implements Runnable {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -26,43 +25,65 @@ public class Board extends Canvas {
     public static final int LEVEL_STRESSED = 2;
     public static final int LEVEL_INFO = 3;
 
-    public static final byte MAX_ZEBRA_VELOCITY = 3;
-    public static final byte MAX_CHEETAH_VELOCITY = 6;
+    public static final byte MAX_ZEBRA_VELOCITY = 4;
+    public static final byte MAX_CHEETAH_VELOCITY = 5;
     public static final byte MAX_COMA_COUNTER = 3;
     public static final int CHEETAH_STARVATION_RATE = 2;
-    public static final int CHEETAH_HIT_RATE = 50; // konstant för Cheetah
-    public static final int CHEETAH_RANDOM_MOVE_RATIO = 10;
+    public static final int CHEETAH_HIT_RATE = 20; // konstant för Cheetah
+    public static final int CHEETAH_RANDOM_MOVE_RATIO = 30;
     public static final int ZEBRA_RANDOM_MOVE_RATIO = 30;
-    public static final int ZEBRA_VISIBILITY = 2;
+    public static final int ZEBRA_VISIBILITY = 3;
 
-    public static final int DELAY_IN_MILLIS = 250;
+    // Constants used in the game loop
+    private static final double GAME_HERTZ = 60;
+    public static final double TBU = 1000000000 / GAME_HERTZ; // Time Before Update
+    public static final double MUBR = 3; //Must Update Before Render
+    public static final double TARGET_FPS = 1000;
+    public static final double TTBR = 1000000000 / TARGET_FPS; // Total Time Before Render
 
+    private int width;
+    private int height;
+
+    public static final int DELAY_IN_MILLIS = 205;
     private int size;
     private ArrayList<Animal> animals;
-    private int tickCounter;
+    private int gameAge;
     private int initialZebraCount;
     private int initialCheetahCount;
     private boolean scrambleList;
-    private Window window;
+
+    private BufferStrategy bs;
+    private Graphics2D g;
+    private BufferedImage img;
+    private Thread thread;
+    private boolean running;
 
     public Board() {
         size = 20;
-        tickCounter = 0;
         scrambleList = false;
+        gameAge = 0;
         initialZebraCount = 0;
         initialCheetahCount = 0;
         animals = new ArrayList<Animal>();
-        window = new Window(GUI_WIDTH, GUI_HEIGHT, "Savannsimulator v.0.5", this);
+        setFocusable(true);
+        requestFocus();
     } // Board:Board
 
-    public Board(int size, int initialZebraCount, int initialCheetahCount) {
-        tickCounter = 0;
+    public Board(int width, int height, int size, int initialZebraCount, int initialCheetahCount, BufferStrategy bs) {
+        gameAge = 0;
+
+        this.bs = bs;
         this.size = size;
+        this.width = width;
+        this.height = height;
         scrambleList = false;
         this.initialZebraCount = initialZebraCount;
         this.initialCheetahCount = initialCheetahCount;
         animals = new ArrayList<Animal>();
-        window = new Window(GUI_WIDTH, GUI_HEIGHT, "Savannsimulator v.0.5", this);
+
+        setPreferredSize(new Dimension(width, height));
+        setFocusable(true);
+        requestFocus();
     } // Board:Board
 
     // Statisk metod som gör det lite enklare att skriva ut färgmeddelanden
@@ -102,6 +123,15 @@ public class Board extends Canvas {
         return pimpString(String.format("%.5f", number), level);
     } // pimpString
 
+    public void addNotify(){
+        super.addNotify();
+
+        if (thread == null){
+            thread = new Thread(this, "GameThread");
+            thread.start();
+        }
+    } // addNotify
+
     public void createAnimals() {
         for (int i = 0; i < initialZebraCount; i++) {
             animals.add(new Zebra());
@@ -123,14 +153,12 @@ public class Board extends Canvas {
     // returns the width of each map square
     public int getMapSquareWidth() {
 
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        return (int) dim.getWidth() / size;
+        return width / size;
     } // getMapSquareSize
 
     // returns the height of each map square
     public int getMapSquareHeight() {
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        return (int) dim.getHeight() / size;
+        return height / size;
     } // getMapSquareHeight
 
     public ArrayList<Animal> getAnimals() {
@@ -141,71 +169,81 @@ public class Board extends Canvas {
         return initialZebraCount - getZebraCount();
     } // getKillCount
 
-    public byte runSimulation() {
+    private void init() {
+        running =  true;
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        g = (Graphics2D) img.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    } // init
+
+    @Override
+    public void run() {
         boolean quit = false;
-        BufferStrategy bs = null;
 
-        while (!quit) {
-            bs = this.getBufferStrategy();
-            if (bs == null) {
-                this.createBufferStrategy(3);
-            } // if bs...
-            else {
-                Graphics g = bs.getDrawGraphics();
-                printBoard(g);
+        init();
 
-                for (Animal a : animals) {
-                    a.move();
-                    a.render(g);
-                } // for a...
+        double lastUpdateTime = System.nanoTime();
+        double lastRenderTime;
 
-                cleanupBoard();
-                tickCounter++;
-                window.update();
+        int frameCount = 0;
+        int oldFrameCount = 0;
+        int tickCount = 0;
+        int oldTickCount = 0;
+        int lastSecondTime = (int)lastUpdateTime / 1000000000;
 
-                quit = (getZebraCount() == 0 || getCheetahCount() == 0); // || tickCounter >= 10;
+        while (running && !quit) {
+            double now = System.nanoTime();
+            int updateCount = 0;
 
-                // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
-                // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland)
-                if (scrambleList) {
-                    Collections.shuffle(animals);
-                } // if scrambleList...
+            render();
+            draw();
 
-                if (quit) {
-                    printBoard(g);
-                    Graphics2D g2d = (Graphics2D) g;
+            cleanupBoard();
+            gameAge++;
+            ((Window)SwingUtilities.getAncestorOfClass(JFrame.class, this)).updateTitle();
 
-                    String s = "G A M E    O V E R";
-                    Font font = new Font("Serif", Font.PLAIN, 72);
-                    FontMetrics metrics = g.getFontMetrics(font);
-                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-                    g2d.setFont(font);
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(Color.RED);
-                    Rectangle2D r = metrics.getStringBounds(s, g2d);
-                    int yText = (int) (dim.getHeight() - r.getHeight()) / 2;
-                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, yText);
-                    s = (getCheetahCount() == 0) ? "Zebrorna vann!!!" : "Geparderna vann!";
-                    r = metrics.getStringBounds(s, g2d);
-                    g2d.drawString(s, (int) (dim.getWidth() - metrics.stringWidth(s)) / 2, yText + (int) r.getHeight());
-                    bs.show();
-                } // if quit...
+            quit = (getZebraCount() == 0 || getCheetahCount() == 0); // || gameAge >= 10;
 
-                bs.show();
-                g.dispose();
+            // Vill man randomisera listan så att geparderna inte alltid är sist? I så fall, sätt variablen till true
+            // TODO: 2019-09-29 Diskutera om vi vill randomisera listan (ibland)
+            if (scrambleList) {
+                Collections.shuffle(animals);
+            } // if scrambleList...
 
-                // Fördröj spelet lite så att det går att läsa utskrifterna
-                try {
-                    TimeUnit.MILLISECONDS.sleep(DELAY_IN_MILLIS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } // catch
-            } // else
-        }  // while (!quit)
+            // Fördröj spelet lite så att det går att läsa utskrifterna
+            try {
+                TimeUnit.MILLISECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } // catch
+        }  // while running
 
-        printResult();
-        return 0;
-    } // runSimulation
+        quitMessage();
+    } // run
+
+    private void quitMessage() {
+        printBoard();
+
+        String s = "G A M E    O V E R";
+        Font font = new Font("Serif", Font.PLAIN, 72);
+        FontMetrics metrics = g.getFontMetrics(font);
+        g.setFont(font);
+        g.setColor(Color.RED);
+        Rectangle2D r = metrics.getStringBounds(s, g);
+        int yText = (int) (height - r.getHeight()) / 2;
+        g.drawString(s, (int) (width - metrics.stringWidth(s)) / 2, yText);
+
+        s = (getCheetahCount() == 0) ? "Zebrorna vann!!!" : "Geparderna vann!";
+        r = metrics.getStringBounds(s, g);
+        g.drawString(s, (int) (width - metrics.stringWidth(s)) / 2, yText + (int) r.getHeight());
+        draw();
+
+        System.out.printf("GAME OVER! x:%d, y:%d, msg:%s, w:%d, h:%d", (width - metrics.stringWidth(s)) / 2, yText + (int) r.getHeight(), s, width, height);
+        System.out.printf("%n%nTack för att du spelade! Simuleringen tog %s ticks.%n", Board.pimpString(gameAge, Board.LEVEL_INFO));
+        System.out.printf("%s zebror och %s geopard(er) överlevde spelet",
+                Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
+                Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO));
+    } // quitMessage
 
     // Ta bort de döda djuren från spelplanen
     private void cleanupBoard() {
@@ -218,44 +256,33 @@ public class Board extends Canvas {
             animals.remove(a);
     } // cleanupBoard
 
-    private void printBoard(Graphics g) {
+    private void printBoard() {
         String message = String.format("%s%nCurrent tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
                 "-".repeat(80),
-                Board.pimpString((tickCounter + 1), Board.LEVEL_INFO),
+                Board.pimpString((gameAge + 1), Board.LEVEL_INFO),
                 Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
                 Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO),
                 Board.pimpString(getKillCount(), Board.LEVEL_BOLD));
         System.out.print(message);
 
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        Graphics2D g2d = (Graphics2D) g;
-
-        g2d.setColor(Color.GREEN);
-        g2d.fillRect(0, 0, (int) dim.getWidth(), (int) dim.getHeight());
+        g.setColor(new Color(0, 150, 0));
+        g.fillRect(0, 0, (int) width, (int) height);
 
         Font font = new Font("Serif", Font.PLAIN, 20);
-        g2d.setFont(font);
-        g2d.setColor(Color.BLACK);
+        g.setFont(font);
+        g.setColor(Color.BLACK);
 
         message = String.format("Current tick count: %s, antalet zebror: %s, antal geparder: %s, kill count: %s%n",
-                (tickCounter + 1),
+                (gameAge + 1),
                 getZebraCount() + "/" + initialZebraCount,
                 getCheetahCount() + "/" + initialCheetahCount,
                 getKillCount());
 
-        // Justera så att texten hamnar i mitten
+        // Justera så att texten centeras horizontells
         FontMetrics metrics = g.getFontMetrics(font);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int x = (int) (dim.getWidth() - metrics.stringWidth(message)) / 2;
-        g2d.drawString(message, x, 20);
+        int x = (int) (width - metrics.stringWidth(message)) / 2;
+        g.drawString(message, x, 60);
     } // printBoard
-
-    private void printResult() {
-        System.out.printf("%nTack för att du spelade! Simuleringen tog %s ticks.%n", Board.pimpString(tickCounter, Board.LEVEL_INFO));
-        System.out.printf("%s zebror och %s geopard(er) överlevde spelet",
-                Board.pimpString(getZebraCount() + "/" + initialZebraCount, Board.LEVEL_INFO),
-                Board.pimpString(getCheetahCount() + "/" + initialCheetahCount, Board.LEVEL_INFO));
-    } // printResult
 
     public int getZebraCount() {
         int zebras = 0;
@@ -279,8 +306,8 @@ public class Board extends Canvas {
         return cheetahs;
     } // getZebraCount
 
-    public int getTickCounter() {
-        return tickCounter;
+    public int getGameAge() {
+        return gameAge;
     }
 
     @Override
@@ -292,4 +319,36 @@ public class Board extends Canvas {
         }
         return sb.toString();
     } // toString
+
+    public void setBufferStrategy(BufferStrategy bs) {
+        this.bs = bs;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    private void render(){
+        if (g != null){
+            printBoard();
+
+            for (Animal a : animals) {
+                a.move();
+                a.render(g);
+            } // for a...
+        } // if g...
+    } // render
+
+    private void draw(){
+        do {
+            Graphics g2 = (Graphics) bs.getDrawGraphics();
+            g2.drawImage(img, 0, 0, width, height, null);
+            g2.dispose();
+            bs.show();
+        } while(bs.contentsLost());
+    } // draw
 } // class Board

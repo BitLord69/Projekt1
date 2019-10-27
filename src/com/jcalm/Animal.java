@@ -115,12 +115,12 @@ public abstract class Animal implements CollisionDetector {
         return coord;
     } // getCoord
 
-    // Implementering av interfacet CollisionDetercor
+    // Implementering av interfacet CollisionDetector
     public Rectangle getBounds() { // metod för att få djurens "radie"
         return new Rectangle(coord.getX(), coord.getY(), 1, 1);
     } // getBounds
 
-    // Implementering av interfacet CollisionDetercor
+    // Implementering av interfacet CollisionDetector
     public boolean collide(CollisionDetector cd) {
         return (getBounds().intersects(cd.getBounds()));
     } // collide
